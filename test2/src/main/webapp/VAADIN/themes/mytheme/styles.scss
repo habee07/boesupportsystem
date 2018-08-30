@@ -1,0 +1,24 @@
+@import "mytheme.scss";
+@import "addons.scss";
+
+// This file prefixes all rules with the theme name to avoid causing conflicts with other themes.
+// The actual styles should be defined in mytheme.scss
+
+.mytheme {
+  @include addons;
+  @include mytheme;
+
+
+  .v-grid-row.coms > td {
+      background-color: rgb(240,248,255);
+  }
+  .v-grid-row.maths > td {
+        background-color: rgb(230, 230,250);
+    }
+  .v-grid-row.cam > td {
+        background-color: rgb(255, 240, 245);
+        }
+  .v-grid-row.physics > td {
+          background-color: rgb(255, 228, 225);
+          }
+}
