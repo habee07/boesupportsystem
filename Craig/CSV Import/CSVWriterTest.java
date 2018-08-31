@@ -14,7 +14,7 @@ public class BasicCsvWriter {
             //Writing records in the generated CSV file
             csvPrinter.printRecord("Craig Sevell", 100000);
             csvPrinter.printRecord("Jane Doe", 20000);
-            csvPrinter.printRecord("James Bonf", 30000);
+            csvPrinter.printRecord("James Bond", 30000);
             //Writing records in the form of a list
             csvPrinter.printRecord(Arrays.asList("Dev Bhatia", 4000));
             csvPrinter.flush();
