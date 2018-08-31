@@ -27,11 +27,10 @@ public class CSVFileApplication extends Application {
       @Override
       public OutputStream receiveUpload(String filename, String mimeType) {
         try {
-          /* Here, we'll stored the uploaded file as a temporary file. No doubt there's
+          /*store the uploaded file as a temporary file. No doubt there's
             a way to use a ByteArrayOutputStream, a reader around it, use ProgressListener (and
             a progress bar) and a separate reader thread to populate a container *during*
             the update.
-            This is quick and easy example, though.
             */
           tempFile = File.createTempFile("temp", ".csv");
           return new FileOutputStream(tempFile);
@@ -45,13 +44,13 @@ public class CSVFileApplication extends Application {
       @Override
       public void uploadFinished(Upload.FinishedEvent finishedEvent) {
         try {
-          /* Let's build a container from the CSV File */
+          /* a container from the CSV File */
           FileReader reader = new FileReader(tempFile);
           IndexedContainer indexedContainer = buildContainerFromCSV(reader);
           reader.close();
           tempFile.delete();
 
-          /* Finally, let's update the table with the container */
+          /*update the table with the container */
           table.setCaption(finishedEvent.getFilename());
           table.setContainerDataSource(indexedContainer);
           table.setVisible(true);
@@ -105,9 +104,7 @@ public class CSVFileApplication extends Application {
 
 
   /**
-   * Set's up the item property ids for the container. Each is a String (of course,
-   * you can create whatever data type you like, but I guess you need to parse the whole file
-   * to work it out)
+   * Set's up the item property ids for the container. Each is a String.
    *
    * @param container The container to set
    * @param columnHeaders The column headers, i.e. the first row from the CSV file
@@ -120,7 +117,7 @@ public class CSVFileApplication extends Application {
 
   /**
    * Adds an item to the given container, assuming each field maps to it's corresponding property id.
-   * Again, note that I am assuming that the field is a string.
+   * assuming that the field is a string.
    *
    * @param container
    * @param propertyIds
