@@ -7,21 +7,19 @@ import java.util.List;
  */
 public class students {
 
-    private float studentNumber;
+    private String studentNumber;
     private String studentSurname;
     private String studentName;
     private String program;
     private List<Courses> course;
-    private String yearOutCome;
     private List<StudentHistory> history;
 
-    public students(float studentNumber, String studentSurname, String studentName, String program, List<Courses> course, String yearOutCome, List<StudentHistory> history) {
+    public students(String studentNumber, String studentSurname, String studentName, String program, List<Courses> course, List<StudentHistory> history) {
         this.studentNumber = studentNumber;
         this.studentSurname = studentSurname;
         this.studentName = studentName;
         this.program = program;
         this.course = course;
-        this.yearOutCome = yearOutCome;
         this.history = history;
     }
 
@@ -33,11 +31,11 @@ public class students {
         this.history = history;
     }
 
-    public float getStudentNumber() {
+    public String getStudentNumber() {
         return studentNumber;
     }
 
-    public void setStudentNumber(float studentNumber) {
+    public void setStudentNumber(String studentNumber) {
         this.studentNumber = studentNumber;
     }
 
@@ -73,11 +71,4 @@ public class students {
         this.course = course;
     }
 
-    public String getYearOutCome() {
-        return yearOutCome;
-    }
-
-    public void setYearOutCome(String yearOutCome) {
-        this.yearOutCome = yearOutCome;
-    }
 }

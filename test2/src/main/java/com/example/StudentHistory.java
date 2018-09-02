@@ -9,12 +9,12 @@ public class StudentHistory {
     private String programCode;
     private String yearOutcome;
     private String outcomeDescription;
-    private float averageMarks;
+    private double averageMarks;
     private int enrolledCredits;
     private int achievedCredits;
 
 
-    public StudentHistory(int year, String yos, String programCode, String yearOutcome, String outcomeDescription, float averageMarks, int enrolledCredits, int achievedCredits) {
+    public StudentHistory(int year, String yos, String programCode, String yearOutcome, String outcomeDescription, double averageMarks, int enrolledCredits, int achievedCredits) {
         this.year = year;
         this.yos = yos;
         this.programCode = programCode;
@@ -65,11 +65,11 @@ public class StudentHistory {
         this.outcomeDescription = outcomeDescription;
     }
 
-    public float getAverageMarks() {
+    public double getAverageMarks() {
         return averageMarks;
     }
 
-    public void setAverageMarks(float averageMarks) {
+    public void setAverageMarks(double averageMarks) {
         this.averageMarks = averageMarks;
     }
 

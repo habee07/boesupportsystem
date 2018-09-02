@@ -2,9 +2,7 @@ package com.example;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 
 import java.util.List;
 
@@ -30,12 +28,30 @@ final class CGridLayout extends VerticalLayout {
 
 
         //Label studentInfo = ;
+
+        //Label studentDetails0 = new Label(allStudents.get(0).getStudentNumber()+ "  " + allStudents.get(0).getStudentName() + " " + allStudents.get(0).getStudentSurname());
+        //studentDetails0.addStyleName("h1");
+        //Label studentDetails1 = new Label(allStudents.get(1).getStudentNumber()+ "  " + allStudents.get(1).getStudentName() + " " + allStudents.get(1).getStudentSurname());
+        //studentDetails1.addStyleName("h1");
+        Label blank = new Label(" ");
+        blank.setStyleName("h2");
+        StudentDetails studentDetails0 = new StudentDetails(allStudents.get(0));
+        StudentDetails studentDetails1 = new StudentDetails(allStudents.get(1));
+
+        StudentYearInfo studentYearInfo0 = new StudentYearInfo(allStudents.get(0).getHistory());
+        StudentYearInfo studentYearInfo1 = new StudentYearInfo(allStudents.get(1).getHistory());
+
+
+        //studentSubHeader.setSizeUndefined();
+        addComponents(studentDetails0,studentYearInfo0);
         CGrid = new CourseGrid(allStudents.get(0).getCourse());
         addComponentsAndExpand(CGrid);
+
         //setSizeFull();
         CGrid2 = new CourseGrid(allStudents.get(1).getCourse());
+        addComponents(studentDetails1, studentYearInfo1);
         addComponentsAndExpand(CGrid2);
-        setSizeFull();
+        //setSizeFull();
     }
 
     private void onYearFilterTextChange(HasValue.ValueChangeEvent<String> stringValueChangeEvent) {
