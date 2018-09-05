@@ -9,16 +9,8 @@
   @include mytheme;
 
 
-  .v-grid-row.coms > td {
+  .v-grid-row.filters > td {
       background-color: rgb(240,248,255);
   }
-  .v-grid-row.maths > td {
-        background-color: rgb(230, 230,250);
-    }
-  .v-grid-row.cam > td {
-        background-color: rgb(255, 240, 245);
-        }
-  .v-grid-row.physics > td {
-          background-color: rgb(255, 228, 225);
-          }
-}
+
+  }

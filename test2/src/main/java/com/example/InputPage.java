@@ -19,6 +19,7 @@ public class InputPage extends VerticalLayout implements View {
 
 
 
+
         // making students with courses;
         /**List<students> allStudents = new ArrayList<>();
 
@@ -48,13 +49,14 @@ public class InputPage extends VerticalLayout implements View {
         //DB CONNECTION TEST:
         MysqlCon conn = new MysqlCon();
         List<students> allStudents = conn.getStudentObjects();
-
+        //System.out.println(allStudents.size());
+        Label test = new Label("test");
         CGridLayout courseGrid = new CGridLayout(allStudents);
         Label welcome = new Label("Welcome");
         welcome.addStyleName("h1");
         addComponent(welcome);
 
-        addComponents(courseGrid);
+        addComponents(courseGrid, test);
 
 
 

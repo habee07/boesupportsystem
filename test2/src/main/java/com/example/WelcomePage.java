@@ -18,6 +18,7 @@ public class WelcomePage extends VerticalLayout implements View{
         Label welcome = new Label("Welcome");
         welcome.addStyleName("h1");
         addComponent(welcome);
+
     }
 
     @Override

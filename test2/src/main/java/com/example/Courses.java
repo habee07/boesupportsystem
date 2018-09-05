@@ -28,7 +28,7 @@ public class Courses {
         Double mark = getSuppMark();
         setStrSupp(Double.toString(mark));
         if(mark == -1.0){
-            setStrSupp("N/A");
+            setStrSupp("");
         }
 
         return strSupp;
