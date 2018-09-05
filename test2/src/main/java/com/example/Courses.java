@@ -4,28 +4,39 @@ package com.example;
  * Created by habee on 2018/08/19.
  */
 public class Courses {
-    private int finalMark;
+    private double finalMark;
     private String courseOutcome;
     private String courseName;
     private int year;
-    private String yos;
     private String courseCode;
     private int credits;
-    private int suppMark;
+    private String strSupp;
+    private double suppMark;
 
 
-    public Courses(String coursename, int mainmark, int supplementaryMark, String result, int courseYear, String yearOfStudy, int courseCredits, String codeOfCurse) {
+    public Courses(String coursename, double mainmark, double supplementaryMark, String result, int courseYear, int courseCredits, String codeOfCurse) {
         courseName = coursename;
         finalMark = mainmark;
         courseOutcome = result;
         year = courseYear;
-        yos = yearOfStudy;
         courseCode = codeOfCurse;
         credits = courseCredits;
         suppMark = supplementaryMark;
 
     }
+    public String getStrSupp() {
+        Double mark = getSuppMark();
+        setStrSupp(Double.toString(mark));
+        if(mark == -1.0){
+            setStrSupp("N/A");
+        }
 
+        return strSupp;
+    }
+
+    public void setStrSupp(String strSupp) {
+        this.strSupp = strSupp;
+    }
     public String getCourseOutcome() {
         return courseOutcome;
     }
@@ -34,11 +45,11 @@ public class Courses {
         this.courseOutcome = courseOutcome;
     }
 
-    public int getFinalMark() {
+    public double getFinalMark() {
         return finalMark;
     }
 
-    public void setFinalMark(int finalMark) {
+    public void setFinalMark(double finalMark) {
         this.finalMark = finalMark;
     }
 
@@ -58,14 +69,6 @@ public class Courses {
         this.year = year;
     }
 
-    public String getYos() {
-        return yos;
-    }
-
-    public void setYos(String yos) {
-        this.yos = yos;
-    }
-
     public String getCourseCode() {
         return courseCode;
     }
@@ -82,11 +85,11 @@ public class Courses {
         this.credits = credits;
     }
 
-    public int getSuppMark() {
+    public double getSuppMark() {
         return suppMark;
     }
 
-    public void setSuppMark(int suppMark) {
+    public void setSuppMark(double suppMark) {
         this.suppMark = suppMark;
     }
 }

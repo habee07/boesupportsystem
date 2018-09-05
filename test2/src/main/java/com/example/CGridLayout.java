@@ -4,6 +4,7 @@ import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,8 +12,8 @@ import java.util.List;
  */
 final class CGridLayout extends VerticalLayout {
 
-    private final CourseGrid CGrid;
-    private final CourseGrid CGrid2;
+     List<CourseGrid> CGridList;
+    //private final CourseGrid CGrid2;
     //private final TextField nameFilter;
     //private final TextField yearFilter;
 
@@ -33,31 +34,49 @@ final class CGridLayout extends VerticalLayout {
         //studentDetails0.addStyleName("h1");
         //Label studentDetails1 = new Label(allStudents.get(1).getStudentNumber()+ "  " + allStudents.get(1).getStudentName() + " " + allStudents.get(1).getStudentSurname());
         //studentDetails1.addStyleName("h1");
-        Label blank = new Label(" ");
-        blank.setStyleName("h2");
-        StudentDetails studentDetails0 = new StudentDetails(allStudents.get(0));
-        StudentDetails studentDetails1 = new StudentDetails(allStudents.get(1));
+        //Label blank = new Label(" ");
+        //blank.setStyleName("h2");
+        List<Courses> blankCourse = new ArrayList<>();
+        List<StudentHistory> blankHistory = new ArrayList<>();
+        CGridList = new ArrayList<>();
+        //students blankStudent = new students("", "" , "" , "", blankCourse, blankHistory );
+        //CGrid = new CourseGrid(blankStudent.getCourse());
+        CourseGrid CGrid;
+        for(int i=0;i<allStudents.size();i++){
+            StudentDetails studentDetails = new StudentDetails(allStudents.get(i));
+            StudentYearInfo studentYearInfo = new StudentYearInfo(allStudents.get(i).getHistory());
+            addComponents(studentDetails,studentYearInfo);
+            CGrid = new CourseGrid(allStudents.get(i).getCourse());
+            addComponentsAndExpand(CGrid);
+            CGridList.add(CGrid);
 
-        StudentYearInfo studentYearInfo0 = new StudentYearInfo(allStudents.get(0).getHistory());
-        StudentYearInfo studentYearInfo1 = new StudentYearInfo(allStudents.get(1).getHistory());
+        }
+        //StudentDetails studentDetails0 = new StudentDetails(allStudents.get(0));
+        //StudentDetails studentDetails1 = new StudentDetails(allStudents.get(1));
+
+        //StudentYearInfo studentYearInfo0 = new StudentYearInfo(allStudents.get(0).getHistory());
+        //StudentYearInfo studentYearInfo1 = new StudentYearInfo(allStudents.get(1).getHistory());
 
 
         //studentSubHeader.setSizeUndefined();
-        addComponents(studentDetails0,studentYearInfo0);
-        CGrid = new CourseGrid(allStudents.get(0).getCourse());
-        addComponentsAndExpand(CGrid);
+        //addComponents(studentDetails0,studentYearInfo0);
+        //CGrid = new CourseGrid(allStudents.get(0).getCourse());
+        //addComponentsAndExpand(CGrid);
 
         //setSizeFull();
-        CGrid2 = new CourseGrid(allStudents.get(1).getCourse());
-        addComponents(studentDetails1, studentYearInfo1);
-        addComponentsAndExpand(CGrid2);
+        //CGrid2 = new CourseGrid(allStudents.get(1).getCourse());
+        //addComponents(studentDetails1, studentYearInfo1);
+        //addComponentsAndExpand(CGrid2);
         //setSizeFull();
     }
 
     private void onYearFilterTextChange(HasValue.ValueChangeEvent<String> stringValueChangeEvent) {
-        ListDataProvider<Courses> dataProvider = (ListDataProvider<Courses>) CGrid.getDataProvider();
+        for(int i=0;i<CGridList.size();i++){
 
-        ListDataProvider<Courses> dataProvider2 = (ListDataProvider<Courses>) CGrid2.getDataProvider();
+            ListDataProvider<Courses> dataProvider = (ListDataProvider<Courses>) CGridList.get(i).getDataProvider();
+
+        }
+        //ListDataProvider<Courses> dataProvider2 = (ListDataProvider<Courses>) CGrid2.getDataProvider();
         //dataProvider.setFilter(Courses::getCourseMark, s -> caseInsensitiveContains(s.toString(), stringValueChangeEvent.getValue()));
         //dataProvider2.setFilter(Courses::getCourseMark, s -> caseInsensitiveContains(s.toString(), stringValueChangeEvent.getValue()));
 

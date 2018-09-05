@@ -22,11 +22,10 @@ final class CourseGrid extends Grid<Courses> {
         //k = "<html><font color=\"red\">" + k + "</font></html>";
         addColumn(Courses::getCourseCode).setCaption("Course Code");
         addColumn(Courses::getCourseName).setCaption("Name");
-        addColumn(Courses::getSuppMark).setCaption("Supp Mark");
+        addColumn(Courses::getStrSupp).setCaption("Supp Mark");
         addColumn(Courses::getFinalMark).setCaption("Final Mark");
         addColumn(Courses::getCourseOutcome).setCaption("Course Outcome");
         addColumn(Courses::getYear).setCaption("Year");
-        addColumn(Courses::getYos).setCaption("Year of Study");
         addColumn(Courses::getCredits).setCaption("Course Credits");
 
 
