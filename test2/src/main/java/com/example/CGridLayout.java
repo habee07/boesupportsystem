@@ -14,18 +14,20 @@ final class CGridLayout extends VerticalLayout {
 
      List<CourseGrid> CGridList;
     //private final CourseGrid CGrid2;
-    private final TextField courseNameFilter;
-    private final TextField courseCodeFilter;
-    private final ComboBox<String> courseOutcomeFilter;
+    private TextField courseNameFilter;
+    private TextField courseCodeFilter;
+    private ComboBox<String> courseOutcomeFilter;
 
-    private final TextField minSuppMarkFilter;
-    private final TextField maxSuppMarkFilter;
+    private TextField minSuppMarkFilter;
+    private TextField maxSuppMarkFilter;
 
-    private final TextField minFinalMarkFilter;
-    private final TextField maxFinalMarkFilter;
+    private TextField minFinalMarkFilter;
+    private TextField maxFinalMarkFilter;
 
-    private final Button SoftFilter;
-    private final Button HardFilter;
+    private Button SoftFilter;
+    private Button RemoveSoft;
+    private Button HardFilter;
+    private Button RemoveHard;
     private List<String> FilterList;
     private String FilterType;
     private List<students> allStudents;
@@ -79,8 +81,12 @@ final class CGridLayout extends VerticalLayout {
         maxFinalMarkFilter = new TextField();
         maxFinalMarkFilter.setPlaceholder("Max Final Mark...");
         SoftFilter = new Button("Soft Filter");
+        RemoveSoft = new Button("Remove Soft Filter");
         SoftFilter.addClickListener(this::SoftFiltering);
+        RemoveSoft.addClickListener(this::RemoveSoftFilter);
         HardFilter = new Button("Hard Filter");
+        RemoveHard = new Button("Remove Hard Filter");
+        RemoveHard.addClickListener(this::RemoveHardFilter);
         HardFilter.addClickListener(this::HardFiltering);
         Label dash = new Label("-");
 
@@ -91,7 +97,7 @@ final class CGridLayout extends VerticalLayout {
         Filtering1.addComponents(courseCodeFilter,courseNameFilter,courseOutcomeFilter);
         Filtering2.addComponents(minSuppMarkFilter, new Label("-") ,maxSuppMarkFilter);
         Filtering3.addComponents(minFinalMarkFilter, dash ,maxFinalMarkFilter);
-        Filtering4.addComponents( SoftFilter, HardFilter);
+        Filtering4.addComponents( SoftFilter, RemoveSoft, HardFilter, RemoveHard);
         addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
 
 
@@ -129,8 +135,24 @@ final class CGridLayout extends VerticalLayout {
         //setSizeFull();
     }
 
+    private void RemoveHardFilter(Button.ClickEvent clickEvent) {
+        removeAllComponents();
+        addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
+        FilterList.clear();
+        updateItemsList();
+    }
+
+    private void RemoveSoftFilter(Button.ClickEvent clickEvent) {
+        removeAllComponents();
+        addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
+        FilterList.clear();
+        updateItemsList();
+
+    }
+
     private void updateItemsList() {
         CourseGrid CGrid;
+        Button test= new Button("test");
         for(int i=0;i<allStudents.size();i++) {
             StudentDetails studentDetails = new StudentDetails(allStudents.get(i));
             StudentYearInfo studentYearInfo = new StudentYearInfo(allStudents.get(i).getHistory());
@@ -177,6 +199,7 @@ final class CGridLayout extends VerticalLayout {
 
         }
 
+        FilterType = "NONE";
 
 
     }

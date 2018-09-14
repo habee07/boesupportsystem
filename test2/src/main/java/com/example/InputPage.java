@@ -52,6 +52,7 @@ public class InputPage extends VerticalLayout implements View {
         //System.out.println(allStudents.size());
         Label test = new Label("test");
         CGridLayout courseGrid = new CGridLayout(allStudents);
+
         Label welcome = new Label("Welcome");
         welcome.addStyleName("h1");
         addComponent(welcome);

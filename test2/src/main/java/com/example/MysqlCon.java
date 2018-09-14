@@ -27,7 +27,7 @@ class MysqlCon{
             //con = DriverManager.getConnection(dbUrl, "username", "password");
             con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
             cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            rs = cs.executeQuery("select * from Students limit 100");
+            rs = cs.executeQuery("select * from Students");
             while (rs.next()) {
                 String result = rs.getString(2);
                 studentNumberList.add(result);
