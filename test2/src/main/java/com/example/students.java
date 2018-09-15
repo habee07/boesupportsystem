@@ -13,14 +13,16 @@ public class students {
     private String program;
     private List<Courses> course;
     private List<StudentHistory> history;
+    private NoteInfo stNotes;
 
-    public students(String studentNumber, String studentSurname, String studentName, String program, List<Courses> course, List<StudentHistory> history) {
+    public students(String studentNumber, String studentSurname, String studentName, String program, List<Courses> course, List<StudentHistory> history, NoteInfo stNotes) {
         this.studentNumber = studentNumber;
         this.studentSurname = studentSurname;
         this.studentName = studentName;
         this.program = program;
         this.course = course;
         this.history = history;
+        this.stNotes = stNotes;
     }
 
     public List<StudentHistory> getHistory() {
@@ -71,4 +73,11 @@ public class students {
         this.course = course;
     }
 
+    public NoteInfo getStNotes() {
+        return stNotes;
+    }
+
+    public void setStNotes(NoteInfo stNotes) {
+        this.stNotes = stNotes;
+    }
 }

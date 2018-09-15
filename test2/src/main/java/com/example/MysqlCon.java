@@ -17,6 +17,7 @@ class MysqlCon{
     private String dbUrl = "jdbc:mysql://docselectrical.co.za:3306/DevelopmentDB";
     private List<String> studentNumberList;
 
+
     public void getStudentNumbers() {
         studentNumberList = new ArrayList<>();
 
@@ -34,12 +35,12 @@ class MysqlCon{
                 //addItem(new Object[] { rs.getString(1), rs.getInt(2) }, rs.getInt(2));
             }
 
-            //System.out.println(studentNumberList.size()+"*********************got student numbers");
+            System.out.println("*********************got student numbers");
             con.close();
         } catch (Exception e) {
 
             String result = e.toString();
-            //System.out.println(result);    // getWindow(null).showNotification("Error");
+            System.out.println(result);    // getWindow(null).showNotification("Error");
         }
 
     }
@@ -53,8 +54,9 @@ class MysqlCon{
             String name = "";
             String ProgramCode= "";
             String studentNum= "";
+            NoteInfo ni = new NoteInfo("","");
 
-            Class.forName("com.mysql.jdbc.Driver");
+            //Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
             //con = DriverManager.getConnection(dbUrl, "username", "password");
             cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -105,7 +107,18 @@ class MysqlCon{
                     allStudentHistory.add(newHistory);
                 }
 
-                students newStudent = new students(studentNum, surname, name, ProgramCode, allCourses, allStudentHistory );
+
+                rs = cs.executeQuery("select * from Notes where `Student_No.`='"+studentNumberList.get(i)+"'");
+
+                while (rs.next()){
+                    String pri = rs.getString(2);
+                    String stNote = rs.getString(3);
+                    ni = new NoteInfo(pri, stNote);
+
+                }
+
+                students newStudent = new students(studentNum, surname, name, ProgramCode, allCourses, allStudentHistory,ni);
+
                 allStudents.add(newStudent);
 
             }
@@ -119,4 +132,49 @@ class MysqlCon{
         }
     return allStudents;
     }
+
+
+    public void updateDBNotes(String stNum, String note){
+
+        try {
+            //Class.forName("com.mysql.jdbc.Driver");
+            //con = DriverManager.getConnection(dbUrl, "username", "password");
+            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            PreparedStatement preparedStmt = con.prepareStatement("update Notes SET `Notess` = '"+note+"' WHERE `Student_No.` = '"+stNum+"'");
+            preparedStmt.executeUpdate();
+            //System.out.println(studentNumberList.size()+"*********************got student numbers");
+            con.close();
+        } catch (Exception e) {
+            String result = e.toString();
+
+        }
+
+
+    }
+
+
+    public String getDBNotes(String stNum){
+        String latestNote = "";
+
+        try {
+
+            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            rs = cs.executeQuery("select * from Notes where `Student_No.` = '"+stNum+"'");
+
+            while (rs.next()){
+                latestNote = rs.getString(3);
+            }
+
+
+
+            con.close();
+        } catch (Exception e) {
+            String result = e.toString();
+
+        }
+        return latestNote;
+
+    }
+
 }

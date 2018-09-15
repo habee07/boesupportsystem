@@ -15,18 +15,19 @@ import java.util.List;
 
 final class CourseGrid extends Grid<Courses> {
     private List<Courses> courses;
+
     public CourseGrid(List<Courses> studCourses) {
         courses = studCourses;
 
         //String k = courses.get(1).getName();
         //k = "<html><font color=\"red\">" + k + "</font></html>";
-        addColumn(Courses::getCourseCode).setCaption("Course Code");
-        addColumn(Courses::getCourseName).setCaption("Name");
-        addColumn(Courses::getStrSupp).setCaption("Supp Mark");
-        addColumn(Courses::getFinalMark).setCaption("Final Mark");
-        addColumn(Courses::getCourseOutcome).setCaption("Course Outcome");
-        addColumn(Courses::getYear).setCaption("Year");
-        addColumn(Courses::getCredits).setCaption("Course Credits");
+        Grid.Column<Courses,?> CodeColumn = addColumn(Courses::getCourseCode).setCaption("Course Code");
+        Grid.Column<Courses,?> CourseNameColumn = addColumn(Courses::getCourseName).setCaption("Name");
+        Grid.Column<Courses,?> SuppColumn = addColumn(Courses::getStrSupp).setCaption("Supp Mark");
+        Grid.Column<Courses,?> MarkColumn = addColumn(Courses::getFinalMark).setCaption("Final Mark");
+        Grid.Column<Courses,?> OutcomeColumn = addColumn(Courses::getCourseOutcome).setCaption("Course Outcome");
+        Grid.Column<Courses,?> YearColumn = addColumn(Courses::getYear).setCaption("Year");
+        Grid.Column<Courses,?> CreditsColumn = addColumn(Courses::getCredits).setCaption("Course Credits");
 
 
         setItems(courses);

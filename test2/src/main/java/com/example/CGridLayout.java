@@ -14,91 +14,184 @@ final class CGridLayout extends VerticalLayout {
 
      List<CourseGrid> CGridList;
     //private final CourseGrid CGrid2;
-    private TextField courseNameFilter;
-    private TextField courseCodeFilter;
-    private ComboBox<String> courseOutcomeFilter;
-
-    private TextField minSuppMarkFilter;
-    private TextField maxSuppMarkFilter;
-
-    private TextField minFinalMarkFilter;
-    private TextField maxFinalMarkFilter;
-
-    private Button SoftFilter;
-    private Button RemoveSoft;
-    private Button HardFilter;
-    private Button RemoveHard;
+    private students Astudent;
     private List<String> FilterList;
     private String FilterType;
-    private List<students> allStudents;
+    private StudentDetails studentDetails;
+    private StudentYearInfo studentYearInfo;
+    private CourseGrid CGrid;;
 
-    private HorizontalLayout Filtering1;
-    private HorizontalLayout Filtering2;
-    private HorizontalLayout Filtering3;
-    private HorizontalLayout Filtering4;
+    public CGridLayout(students aStudentsss, List<String> filterlist,String filtertype ) {
+        Astudent = aStudentsss;
+
+        FilterList = filterlist;
+        FilterType = filtertype;
+        Button addNotes = new Button("+ADD NOTES");
+        Button saveNotes = new Button("Save Changes");
+        Button cancelNotes = new Button("Cancel");
+        addNotes.setStyleName("primary");
+        saveNotes.setStyleName("friendly");
+        cancelNotes.setStyleName("danger");
+        TextArea tA = new TextArea();
+
+        String currN = Astudent.getStNotes().getNote();
+        tA.setWordWrap(true);
+        tA.setHeight("150px"); // fixed size with height larger than the panel
+        tA.setWidth("100%");
+        tA.setValue(currN);
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.setSizeFull();
+
+        studentDetails = new StudentDetails(Astudent);
+            studentYearInfo = new StudentYearInfo(Astudent.getHistory());
+            addComponents(studentDetails, studentYearInfo);
+            CGrid = new CourseGrid(Astudent.getCourse());
+            if (FilterType.contains("SOFT")) {
+                System.out.println("SOFT");
+
+                CGrid.setStyleGenerator(t -> {
+                    boolean yesorno = false;
+                    if (FilterList.get(0)!= "EMPTY") {
+
+                        if (t.getCourseOutcome().contains(FilterList.get(0))) {
+                            System.out.println("OUTcome filtering");
+                            yesorno = true;
+                        } else {
+                            return null;
+                        }
+                    }
+
+                    if (FilterList.get(1)!= "EMPTY") {
+
+                        if (t.getCourseCode().contains(FilterList.get(1))) {
+                            System.out.println("FILtering");
+                            yesorno = true;
+                        } else {
+                            return null;
+                        }
+                    }
+                    if (FilterList.get(2)!= "EMPTY") {
+
+                        if (t.getCourseName().contains(FilterList.get(2))) {
+                            System.out.println("name filtering");
+                            yesorno = true;
+                        } else {
+                            return null;
+                        }
+                    }
+                     if(!FilterList.get(5).equals("EMPTY") && !FilterList.get(6).equals("EMPTY")){
+                         if (t.getFinalMark() >= Double.parseDouble(FilterList.get(5)) && t.getFinalMark() <= Double.parseDouble(FilterList.get(6))) {
+                             System.out.println("mark filtering");
+                             yesorno = true;
+                         }
+                         else{
+                             return null;
+                         }
+                     }
+                    if(!FilterList.get(5).equals("EMPTY") && FilterList.get(6).equals("EMPTY")){
+                        if (t.getFinalMark() >= Double.parseDouble(FilterList.get(5))) {
+                            System.out.println("mark filtering");
+                            yesorno = true;
+                        }
+                        else{
+                            return null;
+                        }
+                    }
+                    if(FilterList.get(5).equals("EMPTY") && !FilterList.get(6).equals("EMPTY")){
+                        if (t.getFinalMark() <= Double.parseDouble(FilterList.get(6))) {
+                            System.out.println("mark filtering");
+                            yesorno = true;
+                        }
+                        else{
+                            return null;
+                        }
+                    }
+                     if(!FilterList.get(3).equals("EMPTY") && !FilterList.get(4).equals("EMPTY")){
+                         if (t.getSuppMark() >= Double.parseDouble(FilterList.get(3)) && t.getSuppMark() <= Double.parseDouble(FilterList.get(4))) {
+                             System.out.println("supp filtering");
+                             yesorno = true;
+                         }else{
+                            return null;
+                        }
+                     }
+
+                    if(FilterList.get(3).equals("EMPTY") && !FilterList.get(4).equals("EMPTY")){
+                        if (t.getSuppMark() <= Double.parseDouble(FilterList.get(4))) {
+                            System.out.println("supp filtering");
+                            yesorno = true;
+                        }else{
+                            return null;
+                        }
+                    }
+
+                    if(!FilterList.get(3).equals("EMPTY") && FilterList.get(4).equals("EMPTY")){
+                        if (t.getSuppMark() >= Double.parseDouble(FilterList.get(3))) {
+                            System.out.println("supp filtering");
+                            yesorno = true;
+                        }else{
+                            return null;
+                        }
+                    }
+                    if(yesorno == false){
+                        return null;
+                    }
+                    else {
+                        return "filters";
+                    }
+                });
 
 
-    public CGridLayout(List<students> allStudentsss) {
-        allStudents = allStudentsss;
-        // FILTERING :
+            }
+
+
+            if (FilterType.contains("NONE")) {
+                CGrid.setStyleGenerator(t -> {
+                    return null;
+                });
+
+            }
+
+        MysqlCon c = new MysqlCon();
+        addNotes.addClickListener(e -> {
+            addComponent(tA);
+            tA.setValue(c.getDBNotes(Astudent.getStudentNumber()));
+            hl.addComponents(cancelNotes, saveNotes);
+            hl.setComponentAlignment(saveNotes, Alignment.MIDDLE_CENTER);
+            addComponent(hl);
+
+        });
+
+
+
+
+        cancelNotes.addClickListener(e -> {
+                    removeComponent(hl);
+                    removeComponent(tA);
+
+                }
+        );
+
+
+
+        saveNotes.addClickListener(e -> {
+
+            c.updateDBNotes(Astudent.getStudentNumber(), tA.getValue());
+            removeComponent(tA);
+            removeComponent(hl);
+
+        });
+
+
+
+        addComponentsAndExpand(CGrid, addNotes);
+
+
+
         FilterType = "NONE";
-        FilterList = new ArrayList<>();
-        Filtering1 = new HorizontalLayout();
-        Filtering2 = new HorizontalLayout();
-        Filtering3 = new HorizontalLayout();
-        Filtering4 = new HorizontalLayout();
-        Filtering1.setCaption("Filter Options");
-        Filtering1.setSizeFull();
-        //Filtering2.setSizeFull();
-        //Filtering3.setSizeFull();
-        Filtering4.setSizeFull();
-        courseNameFilter = new TextField();
-        courseNameFilter.setPlaceholder("Course Name...");
-        //courseOutcomeFilter.
-        courseCodeFilter = new TextField();
-        courseCodeFilter.setPlaceholder("Course Code...");
-        courseOutcomeFilter = new ComboBox<>();
-        courseOutcomeFilter.setPlaceholder("Course Outcome...");
-        courseOutcomeFilter.setEmptySelectionAllowed(true);
-        courseOutcomeFilter.setTextInputAllowed(true);
-        List<String> CourseCodes = new ArrayList<>();
-        CourseCodes.add("PASS");
-        CourseCodes.add("FAIL");
-        CourseCodes.add("PMN");
-        CourseCodes.add("PMP");
-        CourseCodes.add("FAB");
-
-
-        courseOutcomeFilter.setItems(CourseCodes);
-        //courseOutcomeFilter = new TextField();
-        //courseOutcomeFilter.setPlaceholder("Course Outcome...");
-        minSuppMarkFilter = new TextField();
-        minSuppMarkFilter.setPlaceholder("Min Supp Mark...");
-        maxSuppMarkFilter = new TextField();
-        maxSuppMarkFilter.setPlaceholder("Max Supp Mark...");
-        minFinalMarkFilter = new TextField();
-        minFinalMarkFilter.setPlaceholder("Min Final Mark...");
-        maxFinalMarkFilter = new TextField();
-        maxFinalMarkFilter.setPlaceholder("Max Final Mark...");
-        SoftFilter = new Button("Soft Filter");
-        RemoveSoft = new Button("Remove Soft Filter");
-        SoftFilter.addClickListener(this::SoftFiltering);
-        RemoveSoft.addClickListener(this::RemoveSoftFilter);
-        HardFilter = new Button("Hard Filter");
-        RemoveHard = new Button("Remove Hard Filter");
-        RemoveHard.addClickListener(this::RemoveHardFilter);
-        HardFilter.addClickListener(this::HardFiltering);
-        Label dash = new Label("-");
-
 
         //nameFilter.addValueChangeListener(this::onNameFilterTextChange);
         //yearFilter.addValueChangeListener(this::onYearFilterTextChange);
 
-        Filtering1.addComponents(courseCodeFilter,courseNameFilter,courseOutcomeFilter);
-        Filtering2.addComponents(minSuppMarkFilter, new Label("-") ,maxSuppMarkFilter);
-        Filtering3.addComponents(minFinalMarkFilter, dash ,maxFinalMarkFilter);
-        Filtering4.addComponents( SoftFilter, RemoveSoft, HardFilter, RemoveHard);
-        addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
 
 
         //Label studentInfo = ;
@@ -114,7 +207,7 @@ final class CGridLayout extends VerticalLayout {
         CGridList = new ArrayList<>();
         //students blankStudent = new students("", "" , "" , "", blankCourse, blankHistory );
         //CGrid = new CourseGrid(blankStudent.getCourse());
-        updateItemsList();
+        //updateItemsList();
 
                 //StudentDetails studentDetails0 = new StudentDetails(allStudents.get(0));
         //StudentDetails studentDetails1 = new StudentDetails(allStudents.get(1));
@@ -137,168 +230,18 @@ final class CGridLayout extends VerticalLayout {
 
     private void RemoveHardFilter(Button.ClickEvent clickEvent) {
         removeAllComponents();
-        addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
-        FilterList.clear();
+        //addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
+        //FilterList.clear();
         updateItemsList();
     }
 
-    private void RemoveSoftFilter(Button.ClickEvent clickEvent) {
-        removeAllComponents();
-        addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
-        FilterList.clear();
-        updateItemsList();
-
-    }
 
     private void updateItemsList() {
-        CourseGrid CGrid;
-        Button test= new Button("test");
-        for(int i=0;i<allStudents.size();i++) {
-            StudentDetails studentDetails = new StudentDetails(allStudents.get(i));
-            StudentYearInfo studentYearInfo = new StudentYearInfo(allStudents.get(i).getHistory());
-            addComponents(studentDetails, studentYearInfo);
-            CGrid = new CourseGrid(allStudents.get(i).getCourse());
-            if (FilterType.contains("SOFT")) {
-                CGrid.setStyleGenerator(t -> {
-                    /**if (t.getCourseOutcome().contains(FilterList.get(0))) {
-                        return "filters";
-                    }
-                     **/
-                    if (t.getCourseCode().contains(FilterList.get(1))) {
-                        return "filters";
-                    }
-                    /**if (t.getCourseName().contains(FilterList.get(2))) {
-                        return "filters";
-                    }
-                    if(FilterList.get(3).equals("EMPTY")){
-                        FilterList.set(3,"0");
-                    }
-                    if(FilterList.get(4).equals("EMPTY")){
-                        FilterList.set(4,"100");
-                    }
-                    if(FilterList.get(5).equals("EMPTY")){
-                        FilterList.set(5,"0");
-                    }
-                    if(FilterList.get(6).equals("EMPTY")){
-                        FilterList.set(6,"100");
-                    }
-                    if (t.getFinalMark() >= Double.parseDouble(FilterList.get(3)) && t.getFinalMark() <= Double.parseDouble(FilterList.get(4))) {
-                        return "filters";
-                    }
-                    if (t.getSuppMark() >= Double.parseDouble(FilterList.get(3)) && t.getSuppMark() <= Double.parseDouble(FilterList.get(4))) {
-                        return "filters";
-                    }
-                    **/
-                    else {
-                        return null;
-                    }
-                });
-            }
-
-            addComponentsAndExpand(CGrid);
-
-        }
-
-        FilterType = "NONE";
 
 
     }
 
 
-    private void SoftFiltering(Button.ClickEvent clickEvent) {
-        String value;
-        if(courseOutcomeFilter.getValue() != null){
-             value = courseOutcomeFilter.getValue();
-
-        }
-        else{
-            value = "EMPTY";
-        }
-        System.out.println(value);
-
-        FilterList.add(value);
-        value = courseCodeFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        System.out.println(value);
-
-        FilterList.add(value);
-        value = courseNameFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = minFinalMarkFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = maxSuppMarkFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = minFinalMarkFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        System.out.println(value);
-
-        FilterList.add(value);
-        value = maxSuppMarkFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-
-        FilterType = "SOFT";
-        removeAllComponents();
-        addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
-
-        updateItemsList();
-    }
-
-    private void HardFiltering(Button.ClickEvent clickEvent) {
-        String value = courseOutcomeFilter.getData().toString();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = courseCodeFilter.getData().toString();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = courseNameFilter.getData().toString();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = minFinalMarkFilter.getData().toString();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = maxSuppMarkFilter.getData().toString();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = minFinalMarkFilter.getData().toString();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-        value = maxSuppMarkFilter.getData().toString();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        FilterList.add(value);
-
-        FilterType = "HARD";
-
-    }
 
 
     private void onYearFilterTextChange(HasValue.ValueChangeEvent<String> stringValueChangeEvent) {
@@ -333,4 +276,51 @@ final class CGridLayout extends VerticalLayout {
         return where.toLowerCase().contains(what.toLowerCase());
     }
 
+    public CourseGrid getCGrid() {
+        return CGrid;
+    }
+
+    public void setCGrid(CourseGrid CGrid) {
+        this.CGrid = CGrid;
+    }
+
+    public students getAstudent() {
+        return Astudent;
+    }
+
+    public void setAstudent(students astudent) {
+        Astudent = astudent;
+    }
+
+    public List<String> getFilterList() {
+        return FilterList;
+    }
+
+    public void setFilterList(List<String> filterList) {
+        FilterList = filterList;
+    }
+
+    public String getFilterType() {
+        return FilterType;
+    }
+
+    public void setFilterType(String filterType) {
+        FilterType = filterType;
+    }
+
+    public StudentDetails getStudentDetails() {
+        return studentDetails;
+    }
+
+    public void setStudentDetails(StudentDetails studentDetails) {
+        this.studentDetails = studentDetails;
+    }
+
+    public StudentYearInfo getStudentYearInfo() {
+        return studentYearInfo;
+    }
+
+    public void setStudentYearInfo(StudentYearInfo studentYearInfo) {
+        this.studentYearInfo = studentYearInfo;
+    }
 }
