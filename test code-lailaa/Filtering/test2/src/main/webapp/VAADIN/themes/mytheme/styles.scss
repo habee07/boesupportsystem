@@ -1,0 +1,26 @@
+@import "mytheme.scss";
+@import "addons.scss";
+
+// This file prefixes all rules with the theme name to avoid causing conflicts with other themes.
+// The actual styles should be defined in mytheme.scss
+
+.mytheme {
+  @include addons;
+  @include mytheme;
+
+  .v-grid-row.filters > td {
+        background-color: rgb(255,179,186);
+    }
+
+    .v-grid-row.default > td{
+    background-colour: #FFF
+    }
+
+  .v-grid-row.bluefilters > td {
+      background-color: rgb(240,248,255);
+  }
+
+
+
+
+  }
