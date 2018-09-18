@@ -171,7 +171,7 @@ class MysqlCon{
             rs = cs.executeQuery("select * from Notes where `Student_No.` = '"+stNum+"'");
 
             while (rs.next()){
-                latestNote = rs.getString(3);
+                latestNote = rs.getString(4);
             }
 
 
