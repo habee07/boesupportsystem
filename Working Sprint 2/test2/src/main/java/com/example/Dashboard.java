@@ -45,6 +45,8 @@ public class Dashboard extends VerticalLayout implements View {
     private Button HardFilter;
     private Button RemoveHard;
     private List<String> FilterList;
+    private List<String> FilterListSOFT;
+
     private String FilterType;
     private List<students> allStudents;
 
@@ -52,6 +54,15 @@ public class Dashboard extends VerticalLayout implements View {
     private HorizontalLayout Filtering2;
     private HorizontalLayout Filtering3;
     private HorizontalLayout Filtering4;
+
+
+    private Label labelHARD;
+    private Label labelSOFT;
+
+
+    private List<Integer> HardList; //1 if on, 0 if off
+    private List<Integer> SoftList; //0 if nothing, 1, 2 , 3
+
 
 
     Users user = new Users();
@@ -381,14 +392,14 @@ public class Dashboard extends VerticalLayout implements View {
         SoftFilter.setIcon(VaadinIcons.FLAG_O);
         RemoveSoft = new Button("Remove Soft Filter");
         RemoveSoft.setIcon(VaadinIcons.CLOSE_CIRCLE_O);
-        SoftFilter.addClickListener(this::SoftFiltering);
-        RemoveSoft.addClickListener(this::RemoveSoftFilter);
+        //SoftFilter.addClickListener(this::SoftFiltering);
+        //RemoveSoft.addClickListener(this::RemoveSoftFilter);
         HardFilter = new Button("Hard Filter");
         HardFilter.setIcon(VaadinIcons.FILTER);
         RemoveHard = new Button("Remove Hard Filter");
         RemoveHard.setIcon(VaadinIcons.CLOSE_CIRCLE_O);
-        RemoveHard.addClickListener(this::RemoveHardFilter);
-        HardFilter.addClickListener(this::HardFiltering);
+        //RemoveHard.addClickListener(this::RemoveHardFilter);
+        //HardFilter.addClickListener(this::HardFiltering);
         Label dash = new Label("-");
 
         HardFilter.setStyleName("primary");
@@ -426,10 +437,24 @@ public class Dashboard extends VerticalLayout implements View {
 
     }
 
+
     private void RemoveHardFilter(Button.ClickEvent clickEvent) {
         FilterType = "NONE";
-        for(int i=0;i<CGridLayoutList.size();i++){
-            if(CGridLayoutList.get(i).isVisible() == false){
+
+        courseCodeFilter.clear();
+        courseNameFilter.clear();
+        courseOutcomeFilter.clear();
+        minSuppMarkFilter.clear();
+        maxSuppMarkFilter.clear();
+        minFinalMarkFilter.clear();
+        maxFinalMarkFilter.clear();
+
+        if (HardList.isEmpty()){
+            return;
+        }
+
+        for(int i=0;i<HardList.size();i++){
+            if(HardList.get(i) == 0){
                 CGridLayoutList.get(i).setVisible(true);
             }
         }
@@ -439,22 +464,17 @@ public class Dashboard extends VerticalLayout implements View {
 
     private void RemoveSoftFilter(Button.ClickEvent clickEvent) {
         FilterType = "NONE";
-        for(int i=0; i< CGridLayoutList.size();i++){
-            CGridLayout newReplacement = new CGridLayout(allStudents.get(i),FilterList,FilterType);
-            replaceComponent(CGridLayoutList.get(i), newReplacement);
-            CGridLayoutList.set(i,newReplacement);
 
+        for(int i=0; i< CGridLayoutList.size();i++){
+            CGridLayoutList.get(i).getCGrid().setStyleGenerator(t -> "default");
         }
-        //removeAllComponents();
-        //addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
-        //FilterList.clear();
-        //updateItemsList();
 
     }
 
 
 
     private void HardFiltering(Button.ClickEvent clickEvent) {
+        HardList = new ArrayList<>();
         FilterList.clear();
         String value;
         if(courseOutcomeFilter.getValue() != null){
@@ -509,7 +529,7 @@ public class Dashboard extends VerticalLayout implements View {
         FilterType = "HARD";
         for(int i=0; i< CGridLayoutList.size();i++){
             //CGridLayout newReplacement = new CGridLayout(allStudents.get(i),FilterList,FilterType);
-            List<Boolean> boolpercourse = new ArrayList<>();
+            //List<Boolean> boolpercourse = new ArrayList<>();
             int j=0;
             boolean studentAns = false;
             while(studentAns == false && j < allStudents.get(i).getCourse().size() ){
@@ -560,7 +580,8 @@ public class Dashboard extends VerticalLayout implements View {
                     k = k + 1;
                     // CHECKING MAX SUPP/FINAL MARK
                     if( FilterList.get(k).equals("EMPTY") != true && Answer == true) {
-                        if (numTesting.get(k) <= Double.parseDouble(FilterList.get(k))) {
+                        //Remember supp marks = -1 should not be considered
+                        if (numTesting.get(k) >= 0 && numTesting.get(k) <= Double.parseDouble(FilterList.get(k))) {
                             Answer = true;
                         } else {
                             Answer = false;
@@ -576,111 +597,22 @@ public class Dashboard extends VerticalLayout implements View {
             }
             if(studentAns == false){
                 CGridLayoutList.get(i).setVisible(false);
+                HardList.add(0);
+
+            }
+            else {
+                HardList.add(1);
             }
 
         }
 
     }
-    private void SoftFiltering(Button.ClickEvent clickEvent) {
-        FilterList.clear();
-        String value;
-        if(courseOutcomeFilter.getValue() != null){
-            value = courseOutcomeFilter.getValue();
 
-        }
-        else{
-            value = "EMPTY";
-        }
-        System.out.println(value);
 
-        FilterList.add(value);
-        value = courseCodeFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        System.out.println(value);
 
-        FilterList.add(value);
-        value = courseNameFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        System.out.println(value);
-        FilterList.add(value);
-        value = minFinalMarkFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        System.out.println(value);
-        FilterList.add(value);
-        value = maxSuppMarkFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        System.out.println(value);
-        FilterList.add(value);
-        value = minFinalMarkFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        System.out.println(value);
 
-        FilterList.add(value);
-        value = maxSuppMarkFilter.getValue();
-        if(value.equals("")){
-            value = "EMPTY";
-        }
-        System.out.println(value);
-        FilterList.add(value);
+    
 
-        FilterType = "SOFT";
-
-        for(int i=0; i< CGridLayoutList.size();i++){
-            CGridLayout newReplacement = new CGridLayout(allStudents.get(i),FilterList,FilterType);
-            //replaceComponent(CGridLayoutList.get(i), newReplacement);
-            //CGridLayoutList.set(i,newReplacement);
-
-            CGridLayoutList.get(i).getCGrid().setStyleGenerator(t -> {
-                boolean yesorno = false;
-                if (FilterList.get(0)!= "EMPTY") {
-
-                    if (t.getCourseOutcome().contains(FilterList.get(0))) {
-                        System.out.println("OUTcome filtering");
-                        yesorno = true;
-                    } else {
-                        return null;
-                    }
-                }
-
-                if (FilterList.get(1)!= "EMPTY") {
-
-                    if (t.getCourseCode().contains(FilterList.get(1))) {
-                        System.out.println("FILtering");
-                        yesorno = true;
-                    } else {
-                        return null;
-                    }
-                }
-                if (FilterList.get(2)!= "EMPTY") {
-
-                    if (t.getCourseName().contains(FilterList.get(2))) {
-                        System.out.println("name filtering");
-                        yesorno = true;
-                    } else {
-                        return null;
-                    }
-                }
-                if(yesorno == false){
-                    return null;
-                }
-                else {
-                    return "filters";
-                }
-            });
-        }
-
-        //updateItemsList();
-    }
 
     /**public void addDashboardOption(String caption){
         Button button = new Button(caption);
