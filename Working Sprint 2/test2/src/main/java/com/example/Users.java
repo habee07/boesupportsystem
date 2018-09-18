@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Users {
 
-    public static Users CurrentUser = new Users("","","","","","","test");
+    public static Users CurrentUser;
 
 
     String UserName;

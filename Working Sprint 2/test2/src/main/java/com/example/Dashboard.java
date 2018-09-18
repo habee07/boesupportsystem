@@ -7,6 +7,7 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class Dashboard extends VerticalLayout implements View {
     VerticalLayout menuLayout = new VerticalLayout();
     HorizontalLayout menuTitle = new HorizontalLayout();
     VerticalLayout contentLayout = new VerticalLayout();
+    VerticalLayout profileLayout = new VerticalLayout();
+
 
     Label lblHeader;
     Label lblMenu;
@@ -66,6 +69,8 @@ public class Dashboard extends VerticalLayout implements View {
         btnProfile.setSizeUndefined();
         btnProfile.setIcon(VaadinIcons.USER_CARD);
 
+
+
         btnLogout = new Button("Sign Out");
         btnLogout.addStyleName("small");
         btnLogout.addStyleName("friendly");
@@ -106,11 +111,16 @@ public class Dashboard extends VerticalLayout implements View {
 
         addComponent(upperSection);
         contentLayout.setSizeUndefined();
+        profileLayout.setSizeUndefined();
         //addWelcomeText();
-        addDataView();
+        profileLayout.setWidth("100%");
         contentLayout.setWidth("100%");
         //contentLayout.setSizeFull();
+        addComponent(profileLayout);
         addComponent(contentLayout);
+        profileLayout.setVisible(false);
+
+
 
 
 
@@ -134,14 +144,14 @@ public class Dashboard extends VerticalLayout implements View {
         //addComponent(new Label("WELCOME TO BOARD OF EXAMINATIONS SYSTEM DASHBOARD ! "));
     }
 
-    public void setMenuTitle(){
+    /**public void setMenuTitle(){
         menuTitle.addComponent(lblMenu);
         menuLayout.addComponent(menuTitle);
         menuLayout.setWidth("100%");
         menuLayout.setComponentAlignment(menuTitle, Alignment.MIDDLE_CENTER);
     }
 
-    /**public void addWelcomeText(){
+    public void addWelcomeText(){
         VerticalLayout data = new VerticalLayout();
         if( user.CurrentUser != null) {
             Label lblTitle = new Label("WELCOME " + user.CurrentUser.Name + " TO THE WITS BOARD OF EXAMINATIONS SYSTEM DASHBOARD !!");
@@ -155,6 +165,165 @@ public class Dashboard extends VerticalLayout implements View {
         //contentLayout.setMargin(new MarginInfo(false, false, false, true));
 
     }**/
+    public void addProfilePage(){
+        btnProfile.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                profileLayout.setVisible(true);
+
+            }
+        });
+        Label lblTitle;
+        Label lblHeader;
+        TextField tfID;
+        TextField tfName;
+        TextField tfEmail;
+        TextArea taBio;
+        PasswordField tfPassword;
+        TextField tfDiscipline;
+        Button btnConfirm;
+        Button btnCancel;
+        RadioButtonGroup opGender;
+
+
+        setSpacing(true);
+        setMargin(true);
+
+        lblTitle = new Label("My Profile");
+        lblTitle.addStyleName("h1");
+
+
+        FormLayout formLayout= new FormLayout();
+        formLayout.setMargin(false);
+        formLayout.addStyleName("light");
+
+
+        lblHeader = new Label("");
+        lblHeader.addStyleName("h2");
+        lblHeader.addStyleName("coloured");
+        lblHeader.setCaption("Personal Information");
+        lblHeader.setIcon(VaadinIcons.USER_CARD);
+        formLayout.addComponent(lblHeader);
+
+        tfID = new TextField("Username:");
+        System.out.println(user.Discipline);
+        //tfID.setValue(user.UserName);
+        tfID.setRequiredIndicatorVisible(true);
+        formLayout.addComponent(tfID);
+
+        tfEmail = new TextField("Email Address:");
+        //tfEmail.setValue(user.Email);
+        tfEmail.setRequiredIndicatorVisible(true);
+        formLayout.addComponent(tfEmail);
+
+        tfName = new TextField("Full Name:");
+        //tfName.setValue(user.Name);
+        tfName.setRequiredIndicatorVisible(true);
+        formLayout.addComponent(tfName);
+
+        tfPassword = new PasswordField("Password:");
+        //tfPassword.setValue(user.Password);
+        tfPassword.setRequiredIndicatorVisible(true);
+        formLayout.addComponent(tfPassword);
+
+        tfDiscipline = new TextField("Discipline:");
+        //tfDiscipline.setValue(user.Discipline);
+        tfDiscipline.setRequiredIndicatorVisible(true);
+        formLayout.addComponent(tfDiscipline);
+
+
+        taBio = new TextArea("Bio:");
+        //taBio.setValue(user.Bio);
+        formLayout.addComponent(taBio);
+
+        opGender = new RadioButtonGroup("Gender");
+        opGender.setItems("Male", "Female", "Other");
+        /**if(user.Gender == "Male"){
+            opGender.setValue("Male");
+
+        }
+        if(user.Gender == "Female"){
+            opGender.setValue("Female");
+
+        }
+        if(user.Gender == "Other"){
+            opGender.setValue("Other");
+
+        }
+        **/
+        opGender.setRequiredIndicatorVisible(true);
+        opGender.addStyleName("horizontal");
+        formLayout.addComponent(opGender);
+
+
+        btnConfirm = new Button("Save Changes");
+        btnCancel =  new Button("Cancel");
+        btnConfirm.setIcon(VaadinIcons.USER_CHECK);
+        btnConfirm.addStyleName("primary");
+        btnCancel.addStyleName("danger");
+        btnCancel.setIcon(VaadinIcons.CLOSE_CIRCLE);
+
+
+        HorizontalLayout footer = new HorizontalLayout();
+        footer.setMargin(new MarginInfo(true, false, true, false));
+        footer.setSpacing(true);
+        footer.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        formLayout.addComponent(footer);
+        footer.addComponent(btnConfirm);
+        footer.addComponent(btnCancel);
+
+        profileLayout.addComponents(lblTitle,lblHeader,formLayout,footer);
+
+
+
+        btnConfirm.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+                String Bio = taBio.getValue();
+
+                if(Bio.equals("")){
+
+                    Bio = "-1";
+
+                }
+
+                //User = updateUser(tfID.getValue(), opGender.getValue().toString(), tfDiscipline.getValue(), tfPassword.getValue(), Bio, tfEmail.getValue(), tfName.getValue());
+                boolean Auth = true;
+                tfID.setValue("");
+                tfDiscipline.setValue("");
+                tfPassword.setValue("");
+                tfEmail.setValue("");
+                tfName.setValue("");
+                taBio.setValue("");
+
+                if (Auth){
+
+                    Notification.show("You profile has been updated successfully!").setDelayMsec(2000);
+
+                    profileLayout.setVisible(false);
+
+                }
+                else{
+
+                    Notification.show("Username already in use, Please try again!",Notification.Type.ERROR_MESSAGE);
+
+
+                }
+
+            }
+        });
+
+        btnCancel.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                profileLayout.setVisible(false);
+
+            }
+        });
+
+    }
+
     public void addDataView(){
 
         Label lblTitle = new Label("WELCOME " + user.CurrentUser.Name + " TO THE WITS BOARD OF EXAMINATIONS SYSTEM DASHBOARD !!");
@@ -275,7 +444,8 @@ public class Dashboard extends VerticalLayout implements View {
             replaceComponent(CGridLayoutList.get(i), newReplacement);
             CGridLayoutList.set(i,newReplacement);
 
-        }//removeAllComponents();
+        }
+        //removeAllComponents();
         //addComponents(Filtering1, Filtering2, Filtering3, Filtering4);
         //FilterList.clear();
         //updateItemsList();
@@ -467,9 +637,46 @@ public class Dashboard extends VerticalLayout implements View {
 
         for(int i=0; i< CGridLayoutList.size();i++){
             CGridLayout newReplacement = new CGridLayout(allStudents.get(i),FilterList,FilterType);
-            replaceComponent(CGridLayoutList.get(i), newReplacement);
-            CGridLayoutList.set(i,newReplacement);
+            //replaceComponent(CGridLayoutList.get(i), newReplacement);
+            //CGridLayoutList.set(i,newReplacement);
 
+            CGridLayoutList.get(i).getCGrid().setStyleGenerator(t -> {
+                boolean yesorno = false;
+                if (FilterList.get(0)!= "EMPTY") {
+
+                    if (t.getCourseOutcome().contains(FilterList.get(0))) {
+                        System.out.println("OUTcome filtering");
+                        yesorno = true;
+                    } else {
+                        return null;
+                    }
+                }
+
+                if (FilterList.get(1)!= "EMPTY") {
+
+                    if (t.getCourseCode().contains(FilterList.get(1))) {
+                        System.out.println("FILtering");
+                        yesorno = true;
+                    } else {
+                        return null;
+                    }
+                }
+                if (FilterList.get(2)!= "EMPTY") {
+
+                    if (t.getCourseName().contains(FilterList.get(2))) {
+                        System.out.println("name filtering");
+                        yesorno = true;
+                    } else {
+                        return null;
+                    }
+                }
+                if(yesorno == false){
+                    return null;
+                }
+                else {
+                    return "filters";
+                }
+            });
         }
 
         //updateItemsList();
@@ -507,21 +714,16 @@ public class Dashboard extends VerticalLayout implements View {
 
 
     }
-
+        **/
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event){
         menuLayout.removeAllComponents();
         contentLayout.removeAllComponents();
-
-        setMenuTitle();
-        this.addDashboardOption("Dashboard");
-        // not needed
-        this.addMenuOption("add Class", "Classform");
-        this.addMenuOption("show all", "teachers table");
-        addWelcomeText();
-
+        profileLayout.removeAllComponents();
+        addDataView();
+        addProfilePage();
 
     }
-    **/
+
 }

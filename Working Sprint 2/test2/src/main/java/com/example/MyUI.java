@@ -34,6 +34,7 @@ public class MyUI extends UI {
         //dashboard
         nav.addView("dashboard", new Dashboard());
 
+
         //Initial view
         nav.navigateTo("login");
 

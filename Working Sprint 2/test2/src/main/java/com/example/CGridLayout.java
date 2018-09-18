@@ -20,11 +20,12 @@ final class CGridLayout extends VerticalLayout {
     private String FilterType;
     private StudentDetails studentDetails;
     private StudentYearInfo studentYearInfo;
-    private CourseGrid CGrid;;
+    private CourseGrid CGrid;
+    boolean changednote;
 
     public CGridLayout(students aStudentsss, List<String> filterlist,String filtertype ) {
         Astudent = aStudentsss;
-
+        changednote = false;
         FilterList = filterlist;
         FilterType = filtertype;
         Button addNotes = new Button("ADD NOTES");
@@ -50,7 +51,7 @@ final class CGridLayout extends VerticalLayout {
             studentYearInfo = new StudentYearInfo(Astudent.getHistory());
             addComponents(studentDetails, studentYearInfo);
             CGrid = new CourseGrid(Astudent.getCourse());
-            if (FilterType.contains("SOFT")) {
+            /**if (FilterType.contains("SOFT")) {
                 System.out.println("SOFT");
 
                 CGrid.setStyleGenerator(t -> {
@@ -154,11 +155,16 @@ final class CGridLayout extends VerticalLayout {
                 });
 
             }
-
+            **/
         MysqlCon c = new MysqlCon();
         addNotes.addClickListener(e -> {
             addComponent(tA);
-            tA.setValue(c.getDBNotes(Astudent.getStudentNumber()));
+            if(changednote == true) {
+                String note = c.getDBNotes(Astudent.getStudentNumber());
+                tA.setValue(note);
+                Astudent.getStNotes().setNote(note);
+                changednote = false;
+            }
             hl.addComponents(cancelNotes, saveNotes);
             hl.setComponentAlignment(saveNotes, Alignment.MIDDLE_CENTER);
             addComponent(hl);
@@ -178,8 +184,9 @@ final class CGridLayout extends VerticalLayout {
 
 
         saveNotes.addClickListener(e -> {
-
+            changednote = true;
             c.updateDBNotes(Astudent.getStudentNumber(), tA.getValue());
+            Astudent.getStNotes().setNote(tA.getValue());
             removeComponent(tA);
             removeComponent(hl);
 
