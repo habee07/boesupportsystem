@@ -31,14 +31,15 @@ public class MyUI extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         
+        //creating the layout
         VerticalLayout verticalLayout = new VerticalLayout(); 
         HorizontalLayout hr1 = new HorizontalLayout();
         HorizontalLayout hr2 = new HorizontalLayout();
         HorizontalLayout hr3 = new HorizontalLayout();
         FormLayout content = new FormLayout();
         Panel panel = new Panel("Students");
-        panel.setContent(content);
         
+        //Filter text fields and horizontal layouts
         TextField coursename = new TextField("Course Name");
         coursename.focus();
         TextField coursecode = new TextField("Course Code");
@@ -51,6 +52,27 @@ public class MyUI extends UI {
         hr2.addComponents(SuppMin, SuppMax);
         hr3.addComponents(FinalMin , FinalMax);
         Button Filter = new Button("Filter", VaadinIcons.CHECK);
+       
+       
+       //We can use a table and use the table filtering properties when filter criteria entered. Below is just my example for testing purposes
+       //https://vaadin.com/docs/v7/framework/components/components-table.html for more on tables
+       //https://vaadin.com/docs/v7/framework/datamodel/datamodel-container.html#datamodel.container.filtered for filtering data in tables
+       Table Student = new Table();
+       Student.addContainerProperty("Student Name", String.class, null);
+       Student.addContainerProperty("Student Number",  String.class, null);
+       Student.setWidth("1300px");
+       Object row = Student.addItem();
+       Item row1 = Student.getItem(row);
+       row1.getItemProperty("Student Name").setValue("Craig");
+       row1.getItemProperty("Student Number").setValue("1419904");
+       Student.addItem(new Object[]{"John", "13245678"}, 2);
+       Student.addItem(new Object[]{"Marc", "1356562"}, 3);
+       Student.addItem(new Object[]{"Jessica","1234567"}, 4);
+       Student.setPageLength(Student.size());
+       content.addComponent(Student);
+        
+       //Setting the layout with all items created above
+        panel.setContent(content);
         verticalLayout.addComponents(hr1,hr2,hr3, Filter);
         verticalLayout.setComponentAlignment(hr1, Alignment.TOP_CENTER);
         verticalLayout.setComponentAlignment(hr2, Alignment.MIDDLE_CENTER);
