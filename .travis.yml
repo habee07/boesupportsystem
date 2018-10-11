@@ -1,4 +1,4 @@
-before_install: cd FINAL SPRINT 3/test2
+before_install: cd build
 language: java
 sudo: false
 script: mvn clean verify
