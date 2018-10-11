@@ -1,14 +1,4 @@
-sudo: false
+before_install: cd FINAL SPRINT 3/test2
 language: java
-services:
-- docker
-cache:
-  directories:
-  - "$HOME/.cache"
-
-deploy:
-  provider: script
-  script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy"
-  skip_cleanup: true
-  on:
-    tags: true
+sudo: false
+script: mvn clean verify
