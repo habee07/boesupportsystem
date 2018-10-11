@@ -23,7 +23,23 @@ public class MyUI extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
 
-        final VerticalLayout layout = new VerticalLayout();
+        Navigator nav = new Navigator(this,this);
+
+        //login
+        nav.addView("login", new Login());
+
+        //sign up
+        nav.addView("signup", new SignUpForm());
+
+        //dashboard
+        nav.addView("dashboard", new Dashboard());
+
+
+        //Initial view
+        nav.navigateTo("login");
+
+
+        /**final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
 
 
@@ -56,7 +72,7 @@ public class MyUI extends UI {
         layout.addComponent(contentPanel);
         getNavigator().navigateTo(WelcomePage.NAME);
         setContent(layout);
-        /**final VerticalLayout layout = new VerticalLayout();
+        inal VerticalLayout layout = new VerticalLayout();
         
         final TextField name = new TextField();
         name.setCaption("Type your name here:");

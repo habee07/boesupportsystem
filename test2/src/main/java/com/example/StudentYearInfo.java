@@ -24,7 +24,13 @@ public class StudentYearInfo extends Grid<StudentHistory> {
 
         setItems(YearsHistory);
         setSizeFull();
-        setHeightByRows(4);
+        if(studentInfo.size()!=0){
+            setHeightByRows(studentInfo.size());
+        }
+        else {
+            setHeightByRows(1);
+        }
+
     }
 
 

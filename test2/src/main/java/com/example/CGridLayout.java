@@ -2,6 +2,7 @@ package com.example;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.*;
 
 import java.util.ArrayList;
@@ -19,16 +20,20 @@ final class CGridLayout extends VerticalLayout {
     private String FilterType;
     private StudentDetails studentDetails;
     private StudentYearInfo studentYearInfo;
-    private CourseGrid CGrid;;
+    private CourseGrid CGrid;
+    boolean changednote;
 
     public CGridLayout(students aStudentsss, List<String> filterlist,String filtertype ) {
         Astudent = aStudentsss;
-
+        changednote = false;
         FilterList = filterlist;
         FilterType = filtertype;
-        Button addNotes = new Button("+ADD NOTES");
+        Button addNotes = new Button("ADD NOTES");
+        addNotes.setIcon(VaadinIcons.COMMENT_ELLIPSIS_O);
         Button saveNotes = new Button("Save Changes");
+        saveNotes.setIcon(VaadinIcons.LOCATION_ARROW_CIRCLE);
         Button cancelNotes = new Button("Cancel");
+        cancelNotes.setIcon(VaadinIcons.MINUS_CIRCLE_O);
         addNotes.setStyleName("primary");
         saveNotes.setStyleName("friendly");
         cancelNotes.setStyleName("danger");
@@ -46,7 +51,7 @@ final class CGridLayout extends VerticalLayout {
             studentYearInfo = new StudentYearInfo(Astudent.getHistory());
             addComponents(studentDetails, studentYearInfo);
             CGrid = new CourseGrid(Astudent.getCourse());
-            if (FilterType.contains("SOFT")) {
+            /**if (FilterType.contains("SOFT")) {
                 System.out.println("SOFT");
 
                 CGrid.setStyleGenerator(t -> {
@@ -150,11 +155,17 @@ final class CGridLayout extends VerticalLayout {
                 });
 
             }
-
+            **/
         MysqlCon c = new MysqlCon();
         addNotes.addClickListener(e -> {
             addComponent(tA);
-            tA.setValue(c.getDBNotes(Astudent.getStudentNumber()));
+
+                String note = c.getDBNotes(Astudent.getStudentNumber());
+                System.out.println(note);
+                tA.setValue(note);
+                Astudent.getStNotes().setNote(note);
+                changednote = false;
+
             hl.addComponents(cancelNotes, saveNotes);
             hl.setComponentAlignment(saveNotes, Alignment.MIDDLE_CENTER);
             addComponent(hl);
@@ -174,8 +185,10 @@ final class CGridLayout extends VerticalLayout {
 
 
         saveNotes.addClickListener(e -> {
-
-            c.updateDBNotes(Astudent.getStudentNumber(), tA.getValue());
+            changednote = true;
+            NoteInfo temp = new NoteInfo("private", tA.getValue());
+            c.DBNotes(Astudent.getStudentNumber(), temp);
+            Astudent.getStNotes().setNote(tA.getValue());
             removeComponent(tA);
             removeComponent(hl);
 
@@ -183,8 +196,8 @@ final class CGridLayout extends VerticalLayout {
 
 
 
-        addComponentsAndExpand(CGrid, addNotes);
-
+        addComponent(CGrid);
+        addComponentsAndExpand(addNotes);
 
 
         FilterType = "NONE";

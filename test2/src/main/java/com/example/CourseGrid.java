@@ -32,8 +32,14 @@ final class CourseGrid extends Grid<Courses> {
 
         setItems(courses);
         setSizeFull();
-        setHeightByRows(courses.size());
+        if(courses.size()!= 0){
 
+            setHeightByRows(courses.size());
+
+        }
+        else{
+            setHeightByRows(1);
+        }
         /**setStyleGenerator(t -> {
             if (t.getCourseCode().equals("coms")) {
                 return "coms";
