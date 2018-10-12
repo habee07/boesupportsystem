@@ -17,8 +17,8 @@ public class StudentYearInfo extends Grid<StudentHistory> {
         addColumn(StudentHistory::getYos).setCaption("Year of Study");
         addColumn(StudentHistory::getProgramCode).setCaption("Program Code");
         addColumn(StudentHistory::getYearOutcome).setCaption("Year Outcome");
-        addColumn(StudentHistory::getAverageMarks).setCaption("Average Year Mark");
         addColumn(StudentHistory::getOutcomeDescription);
+        addColumn(StudentHistory::getAverageMarks).setCaption("Average Year Mark");
         addColumn(StudentHistory::getAchievedCredits).setCaption("Achieved Credits");
         addColumn(StudentHistory::getEnrolledCredits).setCaption("Enrolled Credits");
 

@@ -50,22 +50,21 @@ public class NoteInfo {
         this.userID = user;
     }
 
-    public List<String> getUserInfo(String username){
-        List<String> infoList = new ArrayList<>();
+    public String getUserInfo(String username){
+        String info = "";
         for(int i =0;i <userList.size();i++){
             if(userList.get(i).UserName.equals(username)){
 
-                String info1 = userList.get(i).Name;
-                String info2 = userList.get(i).Discipline;
-                infoList.add(info1);
-                infoList.add(info2);
+                info = info + userList.get(i).Name + "\n ";
+                info = info + "Discipline: " +userList.get(i).Discipline;
+
                 if(!userList.get(i).Bio.equals("-1")){
-                    String info3 =  userList.get(i).Bio;
-                    infoList.add(info3);
+                    info = info + "\n Bio: " + userList.get(i).Bio;
+
             }
             }
         }
-        return infoList;
+        return info;
 
     }
 }

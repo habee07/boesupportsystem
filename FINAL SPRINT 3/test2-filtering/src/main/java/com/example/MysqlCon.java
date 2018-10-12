@@ -151,7 +151,7 @@ class MysqlCon{
                 newStatement.executeUpdate();
 
             } else {
-                PreparedStatement preparedStmt = con.prepareStatement("update Notes SET `PubNotes` = '" + notePublic + "' WHERE `Student_No.` = '" + stNum + "' AND `user` = '" + userName + "'");
+                PreparedStatement preparedStmt = con.prepareStatement("update Notes SET `PubNotes` = '" + notePublic + "' WHERE `Student_No.` = '" + stNum + "' AND `User` = '" + userName + "'");
                 preparedStmt.executeUpdate();
             }
             con.close();
@@ -178,7 +178,7 @@ class MysqlCon{
 
                 } else {
                     //con = DriverManager.getConnection(dbUrl, "username", "password");
-                    PreparedStatement preparedStmt = con.prepareStatement("update Notes SET `PrivNotes` = '" + notePrivate + "' WHERE `Student_No.` = '" + stNum + "' AND `user` = '" + userName + "'");
+                    PreparedStatement preparedStmt = con.prepareStatement("update Notes SET `PrivNotes` = '" + notePrivate + "' WHERE `Student_No.` = '" + stNum + "' AND `User` = '" + userName + "'");
                     preparedStmt.executeUpdate();
 
                 }
@@ -201,7 +201,7 @@ class MysqlCon{
 
             con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
             cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            rs = cs.executeQuery("select * from Notes where `Student_No.` = '"+stNum+"' AND `Users` = '"+userName+"'");
+            rs = cs.executeQuery("select * from Notes where `Student_No.` = '"+stNum+"' AND `User` = '"+userName+"'");
 
             while (rs.next()){
                 PubNote = rs.getString(4);
@@ -214,6 +214,7 @@ class MysqlCon{
             con.close();
         } catch (Exception e) {
             String result = e.toString();
+            System.out.println("catch ");
 
         }
         notes.add(PrivNote);
