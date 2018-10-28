@@ -298,50 +298,50 @@ public class Dashboard extends VerticalLayout implements View {
 
         tfID = new TextField("Username:");
         System.out.println(user.Discipline);
-        //tfID.setValue(user.UserName);
+        tfID.setValue(user.CurrentUser.UserName);
         tfID.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfID);
 
         tfEmail = new TextField("Email Address:");
-        //tfEmail.setValue(user.Email);
+        tfEmail.setValue(user.CurrentUser.Email);
         tfEmail.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfEmail);
 
         tfName = new TextField("Full Name:");
-        //tfName.setValue(user.Name);
+        tfName.setValue(user.CurrentUser.Name);
         tfName.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfName);
 
         tfPassword = new PasswordField("Password:");
-        //tfPassword.setValue(user.Password);
+        tfPassword.setValue(user.CurrentUser.Password);
         tfPassword.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfPassword);
 
         tfDiscipline = new TextField("Discipline:");
-        //tfDiscipline.setValue(user.Discipline);
+        tfDiscipline.setValue(user.CurrentUser.Discipline);
         tfDiscipline.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfDiscipline);
 
 
         taBio = new TextArea("Bio:");
-        //taBio.setValue(user.Bio);
+        taBio.setValue(user.CurrentUser.Bio);
         formLayout.addComponent(taBio);
 
         opGender = new RadioButtonGroup("Gender");
         opGender.setItems("Male", "Female", "Other");
-        /**if(user.Gender == "Male"){
-         opGender.setValue("Male");
+        if(user.CurrentUser.Gender.equals("Male")){
+         opGender.setSelectedItem("Male");
 
          }
-         if(user.Gender == "Female"){
-         opGender.setValue("Female");
+         if(user.CurrentUser.Gender.equals("Female")){
+         opGender.setSelectedItem("Female");
 
          }
-         if(user.Gender == "Other"){
-         opGender.setValue("Other");
+         if(user.CurrentUser.Gender.equals("Other")){
+         opGender.setSelectedItem("Other");
 
          }
-         **/
+
         opGender.setRequiredIndicatorVisible(true);
         opGender.addStyleName("horizontal");
         formLayout.addComponent(opGender);
@@ -379,14 +379,9 @@ public class Dashboard extends VerticalLayout implements View {
 
                 }
 
-                //User = updateUser(tfID.getValue(), opGender.getValue().toString(), tfDiscipline.getValue(), tfPassword.getValue(), Bio, tfEmail.getValue(), tfName.getValue());
-                boolean Auth = true;
-                tfID.setValue("");
-                tfDiscipline.setValue("");
-                tfPassword.setValue("");
-                tfEmail.setValue("");
-                tfName.setValue("");
-                taBio.setValue("");
+                boolean Auth = user.updateUser(tfID.getValue(), opGender.getValue().toString(), tfDiscipline.getValue(), tfPassword.getValue(), Bio, tfEmail.getValue(), tfName.getValue());
+
+
 
                 if (Auth){
 

@@ -152,6 +152,12 @@ public class Users {
         }
     }
 
+
+    public boolean updateUser(String userName, String Gender, String Discipline, String Password, String Bio, String Email, String Name){
+        boolean answer = false;
+        return answer;
+
+    }
     public void logOut() {
 
         CurrentUser = null;

@@ -246,7 +246,6 @@ final class CGridLayout extends VerticalLayout {
             changednotePriv = true;
             Astudent.getStNotes().get(noteNum).setNotePriv(tAPriv.getValue());
             c.updatePrivDBNotes(Astudent.getStudentNumber(),user.CurrentUser.UserName,tAPriv.getValue());
-
             removeComponent(tAPriv);
             removeComponent(hl1);
 
@@ -257,7 +256,8 @@ final class CGridLayout extends VerticalLayout {
             changednotePriv = true;
             Astudent.getStNotes().get(noteNum).setNotePub(tAPub.getValue());
             c.updatePubDBNotes(Astudent.getStudentNumber(),user.CurrentUser.UserName,tAPub.getValue());
-
+            NotesGrid newNoteGrid = new NotesGrid(Astudent.getStNotes());
+            replaceComponent(NoteGrid, newNoteGrid);
             removeComponent(tAPub);
             removeComponent(hl2);
 
