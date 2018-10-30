@@ -27,7 +27,11 @@ public class Dashboard extends VerticalLayout implements View {
     HorizontalSplitPanel lowerSection = new HorizontalSplitPanel();
     VerticalLayout menuLayout = new VerticalLayout();
     HorizontalLayout menuTitle = new HorizontalLayout();
-    VerticalLayout contentLayout = new VerticalLayout();
+    VerticalLayout contentLayout1 = new VerticalLayout();
+    VerticalLayout contentLayout2 = new VerticalLayout();
+    VerticalLayout contentLayout3 = new VerticalLayout();
+    VerticalLayout contentLayout4 = new VerticalLayout();
+    VerticalLayout contentLayout5 = new VerticalLayout();
     VerticalLayout profileLayout = new VerticalLayout();
 
 
@@ -36,7 +40,23 @@ public class Dashboard extends VerticalLayout implements View {
     Button btnLogout;
     Button btnProfile;
 
+    //Pages
+    HorizontalLayout pageButtons;
+    Button btnPage1;
+    Button btnPage2;
+    Button btnPage3;
+    Button btnPage4;
+    Button btnPage5;
+    int currPage;
+    StudentLists studentLists = new StudentLists();
+
     List<CGridLayout> CGridLayoutList;
+    List<CGridLayout> CGridLayoutList1;
+    List<CGridLayout> CGridLayoutList2;
+    List<CGridLayout> CGridLayoutList3;
+    List<CGridLayout> CGridLayoutList4;
+    List<CGridLayout> CGridLayoutList5;
+
     private TextField courseNameFilter;
     private TextField courseCodeFilter;
     private ComboBox<String> courseOutcomeFilter;
@@ -80,7 +100,7 @@ public class Dashboard extends VerticalLayout implements View {
     private String FilterType;
     private List<students> allStudents;
 
-
+    private VerticalLayout AllFilterStuff;
     private HorizontalLayout Filtering1;
     private HorizontalLayout Filtering2;
     private HorizontalLayout Filtering3;
@@ -197,24 +217,39 @@ public class Dashboard extends VerticalLayout implements View {
         //upperSection.setHeight(4, UNITS_EM);
 
         addComponent(upperSection);
-        contentLayout.setSizeUndefined();
+        contentLayout1.setSizeUndefined();
+        contentLayout2.setSizeUndefined();
+        contentLayout3.setSizeUndefined();
+        contentLayout4.setSizeUndefined();
+        contentLayout5.setSizeUndefined();
         profileLayout.setSizeUndefined();
         //addWelcomeText();
         profileLayout.setWidth("100%");
-        contentLayout.setWidth("100%");
+        contentLayout1.setWidth("100%");
+        contentLayout2.setWidth("100%");
+        contentLayout3.setWidth("100%");
+        contentLayout4.setWidth("100%");
+        contentLayout5.setWidth("100%");
         //contentLayout.setSizeFull();
         addComponent(profileLayout);
-        addComponent(contentLayout);
+
+        pageButtons = new HorizontalLayout();
+        pageButtons.setSizeFull();
+
+
+        AllFilterStuff = new VerticalLayout();
+        addComponent(pageButtons);
+        addComponent(AllFilterStuff);
+        addComponent(contentLayout1);
+        addComponent(contentLayout2);
+        addComponent(contentLayout3);
+        addComponent(contentLayout4);
+        addComponent(contentLayout5);
         profileLayout.setVisible(false);
-
-
-
-
-
-
-
-
-
+        contentLayout2.setVisible(false);
+        contentLayout3.setVisible(false);
+        contentLayout4.setVisible(false);
+        contentLayout5.setVisible(false);
         /**menuTitle.addComponent(lblMenu);
          menuLayout.addComponent(menuTitle);
          menuLayout.setWidth("100%");
@@ -425,7 +460,7 @@ public class Dashboard extends VerticalLayout implements View {
 
         lblHeader.setValue("" + user.CurrentUser.Name);
 
-        contentLayout.addComponent(lblTitle);
+        contentLayout1.addComponent(lblTitle);
 
 
 
@@ -439,7 +474,8 @@ public class Dashboard extends VerticalLayout implements View {
         layoutMainButtons.addComponents(question, mainHbutton, mainSbutton);
 
 
-        contentLayout.addComponent(layoutMainButtons);
+        AllFilterStuff.addComponent(layoutMainButtons);
+
 
 
 
@@ -519,7 +555,9 @@ public class Dashboard extends VerticalLayout implements View {
         filteringLayout.addComponents(Filtering1, Filtering2, Filtering3, Filtering4,Filtering6);
         Filtering5.setSizeFull();
 
-        contentLayout.addComponent(Filtering5);
+        AllFilterStuff.addComponent(Filtering5);
+
+
 
         mainHbutton.addValueChangeListener(e -> {
             if(mainHbutton.getValue()) {
@@ -678,16 +716,213 @@ public class Dashboard extends VerticalLayout implements View {
 
 
 
+
         //DB CONNECTION TEST:
         MysqlCon conn = new MysqlCon();
 
-        allStudents = conn.getStudentObjects();
+        //allStudents = conn.getStudentObjects();
+        studentLists.studentList1 = conn.getStudentObjects(1);
+        // Pages:
+
+        btnPage1 = new Button("1");
+        btnPage2 = new Button("2");
+        btnPage3 = new Button("3");
+        btnPage4 = new Button("4");
+        btnPage5 = new Button("5");
+        pageButtons.addComponents(btnPage1,btnPage2,btnPage3,btnPage4,btnPage5);
+        currPage = 1;
+        CGridLayoutList = new ArrayList<>();
+        CGridLayoutList1 = new ArrayList<>();
+        for(int i=0; i<studentLists.studentList1.size();i++){
+            HardList.add(1);
+            CGridLayout studentGrid = new CGridLayout(studentLists.studentList1.get(i), FilterList, FilterType);
+            CGridLayoutList1.add(studentGrid);
+            contentLayout1.addComponent(studentGrid);
+
+        }
+        //making cgridlayoutlist = cgridlayoutlist1
+        CGridLayoutList = CGridLayoutList1;
+
+        btnPage1.addClickListener(e->{
+            if(currPage!=1){
+
+                contentLayout1.setVisible(true);
+
+
+                if(contentLayout2.isVisible() == true){
+                    contentLayout2.setVisible(false);
+                }
+                if(contentLayout3.isVisible() == true){
+                    contentLayout3.setVisible(false);
+                }
+                if(contentLayout4.isVisible() == true){
+                    contentLayout4.setVisible(false);
+                }
+                if(contentLayout5.isVisible() == true){
+                    contentLayout5.setVisible(false);
+                }
+
+                currPage=1;
+            }
+        });
+        btnPage2.addClickListener(e->{
+            if(currPage!=2){
+                if(studentLists.studentList2.isEmpty() == true) {
+                    studentLists.studentList2 = conn.getStudentObjects(2);
+
+                    CGridLayoutList2 = new ArrayList<>();
+                    for (int i = 0; i < studentLists.studentList2.size(); i++) {
+                        HardList.add(1);
+                        CGridLayout studentGrid = new CGridLayout(studentLists.studentList2.get(i), FilterList, FilterType);
+                        CGridLayoutList2.add(studentGrid);
+                        contentLayout2.addComponent(studentGrid);
+
+                    }
+                }
+                //making cgridlayoutlist = cgridlayoutlist1
+                CGridLayoutList = CGridLayoutList2;
+
+                contentLayout2.setVisible(true);
+
+
+                if(contentLayout3.isVisible() == true){
+                    contentLayout3.setVisible(false);
+                }
+                if(contentLayout4.isVisible() == true){
+                    contentLayout4.setVisible(false);
+                }
+                if(contentLayout5.isVisible() == true){
+                    contentLayout5.setVisible(false);
+                }
+                if(contentLayout1.isVisible() == true){
+                    contentLayout1.setVisible(false);
+                }
+
+                currPage=2;
+
+            }
+        });
+        btnPage3.addClickListener(e->{
+            if(currPage!=3){
+                if(studentLists.studentList3.isEmpty() == true) {
+                    studentLists.studentList3 = conn.getStudentObjects(3);
+
+                    CGridLayoutList3 = new ArrayList<>();
+                    for (int i = 0; i < studentLists.studentList3.size(); i++) {
+                        HardList.add(1);
+                        CGridLayout studentGrid = new CGridLayout(studentLists.studentList3.get(i), FilterList, FilterType);
+                        CGridLayoutList3.add(studentGrid);
+                        contentLayout3.addComponent(studentGrid);
+
+                    }
+                }
+                //making cgridlayoutlist = cgridlayoutlist1
+                CGridLayoutList = CGridLayoutList3;
+
+                contentLayout3.setVisible(true);
+
+
+                if(contentLayout1.isVisible() == true){
+                    contentLayout1.setVisible(false);
+                }
+                if(contentLayout2.isVisible() == true){
+                    contentLayout2.setVisible(false);
+                }
+                if(contentLayout4.isVisible() == true){
+                    contentLayout4.setVisible(false);
+                }
+                if(contentLayout5.isVisible() == true){
+                    contentLayout5.setVisible(false);
+                }
+
+                currPage=3;
+
+            }
+        });
+        btnPage4.addClickListener(e->{
+            if(currPage!=4){
+                if(studentLists.studentList4.isEmpty() == true) {
+                    studentLists.studentList4 = conn.getStudentObjects(4);
+
+
+                    CGridLayoutList4 = new ArrayList<>();
+                    for (int i = 0; i < studentLists.studentList4.size(); i++) {
+                        HardList.add(1);
+                        CGridLayout studentGrid = new CGridLayout(studentLists.studentList4.get(i), FilterList, FilterType);
+                        CGridLayoutList4.add(studentGrid);
+                        contentLayout4.addComponent(studentGrid);
+
+                    }
+                }
+                //making cgridlayoutlist = cgridlayoutlist1
+                CGridLayoutList = CGridLayoutList4;
+
+                contentLayout4.setVisible(true);
+
+
+                if(contentLayout2.isVisible() == true){
+                    contentLayout2.setVisible(false);
+                }
+                if(contentLayout3.isVisible() == true){
+                    contentLayout3.setVisible(false);
+                }
+                if(contentLayout1.isVisible() == true){
+                    contentLayout1.setVisible(false);
+                }
+                if(contentLayout5.isVisible() == true){
+                    contentLayout5.setVisible(false);
+                }
+
+                currPage=4;
+            }
+        });
+        btnPage5.addClickListener(e->{
+            if(currPage!=5) {
+                if (studentLists.studentList5.isEmpty() == true) {
+                    studentLists.studentList5 = conn.getStudentObjects(5);
+
+                    CGridLayoutList5 = new ArrayList<>();
+                    for (int i = 0; i < studentLists.studentList5.size(); i++) {
+                        HardList.add(1);
+                        CGridLayout studentGrid = new CGridLayout(studentLists.studentList5.get(i), FilterList, FilterType);
+                        CGridLayoutList5.add(studentGrid);
+                        contentLayout5.addComponent(studentGrid);
+
+                    }
+                }
+                //making cgridlayoutlist = cgridlayoutlist1
+                    CGridLayoutList = CGridLayoutList5;
+
+                contentLayout5.setVisible(true);
+
+
+                if(contentLayout2.isVisible() == true){
+                    contentLayout2.setVisible(false);
+                }
+                if(contentLayout3.isVisible() == true){
+                    contentLayout3.setVisible(false);
+                }
+                if(contentLayout4.isVisible() == true){
+                    contentLayout4.setVisible(false);
+                }
+                if(contentLayout1.isVisible() == true){
+                    contentLayout1.setVisible(false);
+                }
+
+                currPage=5;
+            }
+        });
+
+
+
+
 
         //System.out.println(allStudents.size());
         Label test = new Label("test");
 
 
-        CGridLayoutList = new ArrayList<>();
+        // old all data
+        /**CGridLayoutList = new ArrayList<>();
         for(int i=0; i<allStudents.size();i++){
             HardList.add(1);
             CGridLayout studentGrid = new CGridLayout(allStudents.get(i), FilterList, FilterType);
@@ -695,7 +930,7 @@ public class Dashboard extends VerticalLayout implements View {
             contentLayout.addComponent(studentGrid);
 
         }
-
+        **/
 
     }
 
@@ -2699,7 +2934,11 @@ public class Dashboard extends VerticalLayout implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event){
         menuLayout.removeAllComponents();
-        contentLayout.removeAllComponents();
+        contentLayout1.removeAllComponents();
+        contentLayout2.removeAllComponents();
+        contentLayout3.removeAllComponents();
+        contentLayout4.removeAllComponents();
+        contentLayout5.removeAllComponents();
         profileLayout.removeAllComponents();
         addDataView();
         addProfilePage();
