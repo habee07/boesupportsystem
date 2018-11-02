@@ -15,16 +15,21 @@ class MysqlCon{
     private ResultSet rs;
     //private String dbUrl = "jdbc:mysql://sdp.ms.wits.ac.za:3306/developmentDB?useSSL=false";
     private String dbUrl = "jdbc:mysql://docselectrical.co.za:3306/DevelopmentDB";
-    private List<String> studentNumberList1;
-    private List<String> studentNumberList2;
-    private List<String> studentNumberList3;
-    private List<String> studentNumberList4;
-    private List<String> studentNumberList5;
-    private List<String> studentNumberList;
-    private List<String> currStudentNumberList;
+    List<List<String>> fullListofLists;
+     List<String> studentNumberList1;
+     List<String> studentNumberList2;
+     List<String> studentNumberList3;
+     List<String> studentNumberList4;
+     List<String> studentNumberList5;
+     List<String> studentNumberList;
+     List<String> currStudentNumberList;
+    int numberOfPages;
+    int numberOfItemsPerPage = 4;
 
 
     public void getStudentNumbers() {
+        fullListofLists = new ArrayList<>();
+        numberOfPages = -1;
         studentNumberList = new ArrayList<>();
         studentNumberList1 = new ArrayList<>();
         studentNumberList2 = new ArrayList<>();
@@ -47,7 +52,29 @@ class MysqlCon{
 
             System.out.println("*********************got student numbers");
             con.close();
-            for(int i=0;i<studentNumberList.size();i++){
+            numberOfPages = (studentNumberList.size()/numberOfItemsPerPage)+1;
+            System.out.println("number of pages:" + numberOfPages);
+            for(int k=0;k<numberOfPages;k++){
+                List<String> tempList = new ArrayList<>();
+                fullListofLists.add(tempList);
+
+            }
+
+            for(int i=0;i<numberOfPages;i++){
+                for(int j=0;j<numberOfItemsPerPage;j++){
+                    if(j+(4*i) < studentNumberList.size()){
+                        fullListofLists.get(i).add(studentNumberList.get(j+(4*i)));
+                    }
+                }
+
+            }
+            for(int i = 0;i < fullListofLists.size();i++){
+                System.out.println("list " + i);
+                for(int j=0;j<fullListofLists.get(i).size();j++){
+                    System.out.println(fullListofLists.get(i).get(j));
+                }
+            }
+            /**for(int i=0;i<studentNumberList.size();i++){
                 if(i<3){
                     studentNumberList1.add(studentNumberList.get(i));
                 }
@@ -69,10 +96,8 @@ class MysqlCon{
                 }
 
             }
+            **/
 
-            for(int k=0;k<studentNumberList2.size();k++){
-                System.out.println(studentNumberList2.get(k));
-            }
         } catch (Exception e) {
 
             String result = e.toString();
@@ -173,9 +198,9 @@ class MysqlCon{
 
 
     public List<students> getStudentObjects(int pageNumber){
-        getStudentNumbers();
-        currStudentNumberList = new ArrayList<>();
-        if(pageNumber == 1){
+        //getStudentNumbers();
+        currStudentNumberList = fullListofLists.get(pageNumber-1);
+        /**if(pageNumber == 1){
             currStudentNumberList = studentNumberList1;
         }
         if(pageNumber == 2){
@@ -189,7 +214,8 @@ class MysqlCon{
         }
         if(pageNumber == 5){
             currStudentNumberList = studentNumberList5;
-        }
+        }**/
+
         List<students> allStudents = new ArrayList<>();
 
         try {

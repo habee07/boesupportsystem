@@ -59,6 +59,7 @@ final class CGridLayout extends VerticalLayout {
         notesDisplay.setSizeFull();
         showNotes = new Button("Display Notes");
         showNotes.setStyleName("friendly");
+        showNotes.setIcon(VaadinIcons.NOTEBOOK);
 
         String currNPriv = "";
         String currNPub = "";

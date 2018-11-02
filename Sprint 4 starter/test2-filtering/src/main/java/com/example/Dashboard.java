@@ -1,8 +1,6 @@
 package com.example;
 
 
-import com.sun.org.apache.xalan.internal.xsltc.dom.Filter;
-import com.sun.org.apache.xpath.internal.functions.FuncFalse;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -28,10 +26,7 @@ public class Dashboard extends VerticalLayout implements View {
     VerticalLayout menuLayout = new VerticalLayout();
     HorizontalLayout menuTitle = new HorizontalLayout();
     VerticalLayout contentLayout1 = new VerticalLayout();
-    VerticalLayout contentLayout2 = new VerticalLayout();
-    VerticalLayout contentLayout3 = new VerticalLayout();
-    VerticalLayout contentLayout4 = new VerticalLayout();
-    VerticalLayout contentLayout5 = new VerticalLayout();
+
     VerticalLayout profileLayout = new VerticalLayout();
 
 
@@ -41,16 +36,19 @@ public class Dashboard extends VerticalLayout implements View {
     Button btnProfile;
 
     //Pages
+    int numberOfPages;
     HorizontalLayout pageButtons;
-    Button btnPage1;
-    Button btnPage2;
-    Button btnPage3;
-    Button btnPage4;
-    Button btnPage5;
+    Button nextPage;
+    Button prevPage;
+    Button goToPage;
+
     int currPage;
-    StudentLists studentLists = new StudentLists();
+    ComboBox<String> pageNumbers;
+    List<List<students>> ListofStudentLists;
 
     List<CGridLayout> CGridLayoutList;
+    List<List<CGridLayout>> listOfLayoutList;
+
     List<CGridLayout> CGridLayoutList1;
     List<CGridLayout> CGridLayoutList2;
     List<CGridLayout> CGridLayoutList3;
@@ -218,38 +216,26 @@ public class Dashboard extends VerticalLayout implements View {
 
         addComponent(upperSection);
         contentLayout1.setSizeUndefined();
-        contentLayout2.setSizeUndefined();
-        contentLayout3.setSizeUndefined();
-        contentLayout4.setSizeUndefined();
-        contentLayout5.setSizeUndefined();
+
         profileLayout.setSizeUndefined();
         //addWelcomeText();
         profileLayout.setWidth("100%");
         contentLayout1.setWidth("100%");
-        contentLayout2.setWidth("100%");
-        contentLayout3.setWidth("100%");
-        contentLayout4.setWidth("100%");
-        contentLayout5.setWidth("100%");
+
         //contentLayout.setSizeFull();
         addComponent(profileLayout);
 
         pageButtons = new HorizontalLayout();
-        pageButtons.setSizeFull();
+        //pageButtons.setSizeFull();
 
 
         AllFilterStuff = new VerticalLayout();
         addComponent(pageButtons);
         addComponent(AllFilterStuff);
         addComponent(contentLayout1);
-        addComponent(contentLayout2);
-        addComponent(contentLayout3);
-        addComponent(contentLayout4);
-        addComponent(contentLayout5);
+
         profileLayout.setVisible(false);
-        contentLayout2.setVisible(false);
-        contentLayout3.setVisible(false);
-        contentLayout4.setVisible(false);
-        contentLayout5.setVisible(false);
+
         /**menuTitle.addComponent(lblMenu);
          menuLayout.addComponent(menuTitle);
          menuLayout.setWidth("100%");
@@ -719,31 +705,149 @@ public class Dashboard extends VerticalLayout implements View {
 
         //DB CONNECTION TEST:
         MysqlCon conn = new MysqlCon();
-
+        conn.getStudentNumbers();
+        numberOfPages = conn.numberOfPages;
+        System.out.println(numberOfPages + " no of pages");
         //allStudents = conn.getStudentObjects();
-        studentLists.studentList1 = conn.getStudentObjects(1);
+        List<students> studentList1 = conn.getStudentObjects(1);
+        ListofStudentLists = new ArrayList<>();
+        ListofStudentLists.add(studentList1);
         // Pages:
+        pageNumbers = new ComboBox<>();
+        pageNumbers.setPlaceholder("Go to Page...");
+        pageNumbers.setTextInputAllowed(true);
+        List<String> listOfPageNumbers = new ArrayList<>();
+        for(int i=1;i<=numberOfPages;i++) {
+            listOfPageNumbers.add(Integer.toString(i));
+        }
+        pageNumbers.setItems(listOfPageNumbers);
+        nextPage = new Button("Next Page");
+        prevPage = new Button("Previous Page");
+        nextPage.setStyleName("friendly");
+        nextPage.setIcon(VaadinIcons.CHEVRON_CIRCLE_RIGHT_O);
+        prevPage.setStyleName("friendly");
+        prevPage.setIcon(VaadinIcons.CHEVRON_CIRCLE_LEFT_O);
+        goToPage = new Button("Go");
+        goToPage.setStyleName("primary");
+        goToPage.setIcon(VaadinIcons.FORWARD);
 
-        btnPage1 = new Button("1");
-        btnPage2 = new Button("2");
-        btnPage3 = new Button("3");
-        btnPage4 = new Button("4");
-        btnPage5 = new Button("5");
-        pageButtons.addComponents(btnPage1,btnPage2,btnPage3,btnPage4,btnPage5);
+
+        pageButtons.addComponents(prevPage,pageNumbers, goToPage,nextPage);
         currPage = 1;
         CGridLayoutList = new ArrayList<>();
-        CGridLayoutList1 = new ArrayList<>();
-        for(int i=0; i<studentLists.studentList1.size();i++){
+        listOfLayoutList = new ArrayList<>();
+        Label currpg = new Label("Current Page: " + currPage);
+        contentLayout1.addComponent(currpg);
+        List<CGridLayout> tempLayoutlist = new ArrayList<>();
+        for(int i=0; i<ListofStudentLists.get(0).size();i++){
             HardList.add(1);
-            CGridLayout studentGrid = new CGridLayout(studentLists.studentList1.get(i), FilterList, FilterType);
-            CGridLayoutList1.add(studentGrid);
+            CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(0).get(i), FilterList, FilterType);
+
+            tempLayoutlist.add(studentGrid);
             contentLayout1.addComponent(studentGrid);
 
         }
-        //making cgridlayoutlist = cgridlayoutlist1
-        CGridLayoutList = CGridLayoutList1;
+        listOfLayoutList.add(tempLayoutlist);
 
-        btnPage1.addClickListener(e->{
+        //making cgridlayoutlist = cgridlayoutlist1
+        CGridLayoutList = listOfLayoutList.get(0);
+        goToPage.addClickListener(e->{
+            int oldpage = currPage;
+            String gotoNum  = pageNumbers.getValue();
+            System.out.println(gotoNum+" GO TO ");
+            currPage  = Integer.parseInt(gotoNum);
+
+                contentLayout1.removeAllComponents();
+
+
+
+            Label curr = new Label("Current Page: " + currPage);
+                contentLayout1.addComponent(curr);
+
+                if(listOfLayoutList.size() < currPage) {
+                    for(int j = listOfLayoutList.size(); j<currPage;j++) {
+                        ListofStudentLists.add(conn.getStudentObjects(j+1));
+                        List<CGridLayout> tempLayout = new ArrayList<>();
+
+                        for (int i = 0; i < ListofStudentLists.get(j).size(); i++) {
+                            HardList.add(1);
+                            CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(j).get(i), FilterList, FilterType);
+                            tempLayout.add(studentGrid);
+                            if(j == currPage-1){
+                                contentLayout1.addComponent(studentGrid);
+                            }
+
+                        }
+                        listOfLayoutList.add(tempLayout);
+                    }
+                }
+                else{
+
+                    for(int i=0; i<listOfLayoutList.get(currPage-1).size();i++){
+                        contentLayout1.addComponent(listOfLayoutList.get(currPage-1).get(i));
+                    }
+
+                }
+
+                //making cgridlayoutlist = cgridlayoutlist1
+                CGridLayoutList = listOfLayoutList.get(currPage-1);
+
+
+
+        });
+        nextPage.addClickListener(e->{
+            if(currPage < numberOfPages){
+
+                contentLayout1.removeAllComponents();
+
+                currPage = currPage +1;
+                Label curr = new Label("Current Page: " + currPage);
+                contentLayout1.addComponent(curr);
+
+                if(listOfLayoutList.size() < currPage) {
+                    ListofStudentLists.add(conn.getStudentObjects(currPage));
+                    List<CGridLayout> tempLayout = new ArrayList<>();
+                    for (int i = 0; i < ListofStudentLists.get(currPage-1).size(); i++) {
+                        HardList.add(1);
+                        CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(currPage-1).get(i), FilterList, FilterType);
+                        tempLayout.add(studentGrid);
+                        contentLayout1.addComponent(studentGrid);
+
+                    }
+                    listOfLayoutList.add(tempLayout);
+                }
+                else{
+
+                    for(int i=0; i<listOfLayoutList.get(currPage-1).size();i++){
+                        contentLayout1.addComponent(listOfLayoutList.get(currPage-1).get(i));
+                    }
+
+                }
+
+                //making cgridlayoutlist = cgridlayoutlist1
+                CGridLayoutList = listOfLayoutList.get(currPage-1);
+
+
+            }
+        });
+        prevPage.addClickListener(e->{
+            if(currPage > 1){
+                contentLayout1.removeAllComponents();
+
+                currPage = currPage -1;
+                Label curr = new Label("Current Page: " + currPage);
+                contentLayout1.addComponent(curr);
+                for(int i=0; i<listOfLayoutList.get(currPage-1).size();i++){
+                    contentLayout1.addComponent(listOfLayoutList.get(currPage-1).get(i));
+                }
+                //making cgridlayoutlist = cgridlayoutlist1
+                CGridLayoutList = listOfLayoutList.get(currPage-1);
+
+
+            }
+        });
+
+        /**btnPage1.addClickListener(e->{
             if(currPage!=1){
 
                 contentLayout1.setVisible(true);
@@ -913,7 +1017,7 @@ public class Dashboard extends VerticalLayout implements View {
             }
         });
 
-
+        **/
 
 
 
@@ -2935,11 +3039,10 @@ public class Dashboard extends VerticalLayout implements View {
     public void enter(ViewChangeListener.ViewChangeEvent event){
         menuLayout.removeAllComponents();
         contentLayout1.removeAllComponents();
-        contentLayout2.removeAllComponents();
-        contentLayout3.removeAllComponents();
-        contentLayout4.removeAllComponents();
-        contentLayout5.removeAllComponents();
         profileLayout.removeAllComponents();
+        pageButtons.removeAllComponents();
+        AllFilterStuff.removeAllComponents();
+        
         addDataView();
         addProfilePage();
 
