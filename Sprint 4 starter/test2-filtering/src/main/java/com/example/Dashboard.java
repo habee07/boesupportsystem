@@ -3042,7 +3042,7 @@ public class Dashboard extends VerticalLayout implements View {
         profileLayout.removeAllComponents();
         pageButtons.removeAllComponents();
         AllFilterStuff.removeAllComponents();
-        
+
         addDataView();
         addProfilePage();
 
