@@ -13,8 +13,8 @@ class MysqlCon{
     private PreparedStatement ps;
     private Statement cs;
     private ResultSet rs;
-    //private String dbUrl = "jdbc:mysql://sdp.ms.wits.ac.za:3306/developmentDB?useSSL=false";
-    private String dbUrl = "jdbc:mysql://docselectrical.co.za:3306/DevelopmentDB";
+    private String dbUrl = "jdbc:mysql://sdp.ms.wits.ac.za:3306/developmentDB?useSSL=false";
+    //private String dbUrl = "jdbc:mysql://docselectrical.co.za:3306/DevelopmentDB";
     List<List<String>> fullListofLists;
      List<String> studentNumberList1;
      List<String> studentNumberList2;
@@ -24,7 +24,7 @@ class MysqlCon{
      List<String> studentNumberList;
      List<String> currStudentNumberList;
     int numberOfPages;
-    int numberOfItemsPerPage = 4;
+    int numberOfItemsPerPage = 25;
 
 
     public void getStudentNumbers() {
@@ -36,24 +36,43 @@ class MysqlCon{
         studentNumberList3 = new ArrayList<>();
         studentNumberList4 = new ArrayList<>();
         studentNumberList5 = new ArrayList<>();
-
         /* Add a few items in the table. */
         try {
             //Class.forName("com.mysql.jdbc.Driver");
-            //con = DriverManager.getConnection(dbUrl, "username", "password");
-            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            con = DriverManager.getConnection(dbUrl, "username", "password");
+            long start = System.currentTimeMillis();
+            //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            long end = System.currentTimeMillis();
+            long time1 = end - start;
+            System.out.println(time1 +" for con = driver.getconnetion");
+
+            start = System.currentTimeMillis();
             cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            rs = cs.executeQuery("select * from Students");
+            end = System.currentTimeMillis();
+            time1 = end - start;
+            System.out.println(time1 +" for cs = con.createstatement");
+            start = System.currentTimeMillis();
+
+            rs = cs.executeQuery("select * from Students LIMIT 100");
+            end = System.currentTimeMillis();
+            time1 = end - start;
+            System.out.println(time1 +" actual student numbers query");
+
+            start = System.currentTimeMillis();
             while (rs.next()) {
                 String result = rs.getString(2);
                 studentNumberList.add(result);
                 //addItem(new Object[] { rs.getString(1), rs.getInt(2) }, rs.getInt(2));
             }
-
+            end = System.currentTimeMillis();
+            time1 = end - start;
+            System.out.println(time1 +" while loop making student number list");
             System.out.println("*********************got student numbers");
+
             con.close();
             numberOfPages = (studentNumberList.size()/numberOfItemsPerPage)+1;
             System.out.println("number of pages:" + numberOfPages);
+            start = System.currentTimeMillis();
             for(int k=0;k<numberOfPages;k++){
                 List<String> tempList = new ArrayList<>();
                 fullListofLists.add(tempList);
@@ -74,6 +93,9 @@ class MysqlCon{
                     System.out.println(fullListofLists.get(i).get(j));
                 }
             }
+            end = System.currentTimeMillis();
+            time1 = end - start;
+            System.out.println(time1 +" making list of student lists for pages");
             /**for(int i=0;i<studentNumberList.size();i++){
                 if(i<3){
                     studentNumberList1.add(studentNumberList.get(i));
@@ -118,8 +140,8 @@ class MysqlCon{
             //NoteInfo ni = new NoteInfo("","");
 
             //Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
-            //con = DriverManager.getConnection(dbUrl, "username", "password");
+            //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            con = DriverManager.getConnection(dbUrl, "username", "password");
             cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             for(int i = 0; i < studentNumberList.size();i++) {
                 rs = cs.executeQuery("select * from Students where `Student_No.`='"+studentNumberList.get(i)+"'");
@@ -226,10 +248,23 @@ class MysqlCon{
             //NoteInfo ni = new NoteInfo("","");
 
             //Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            long start = System.currentTimeMillis();
+            con = DriverManager.getConnection(dbUrl, "username", "password");
+            //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            long end = System.currentTimeMillis();
+            long time1 = end - start;
+            System.out.println(time1 +" another con get connection");
+
             //con = DriverManager.getConnection(dbUrl, "username", "password");
+            start = System.currentTimeMillis();
             cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+             end = System.currentTimeMillis();
+             time1 = end - start;
+            System.out.println(time1 +" another con create statement");
+
+            start = System.currentTimeMillis();
             for(int i = 0; i < currStudentNumberList.size();i++) {
+                long starti = System.currentTimeMillis();
                 rs = cs.executeQuery("select * from Students where `Student_No.`='"+currStudentNumberList.get(i)+"'");
                 while (rs.next()) {
                     surname = rs.getString(4);
@@ -240,6 +275,12 @@ class MysqlCon{
 
                     //addItem(new Object[] { rs.getString(1), rs.getInt(2) }, rs.getInt(2));
                 }
+                long endi = System.currentTimeMillis();
+                long timei = endi -starti;
+                System.out.println(timei + "per student(loop) get student details");
+
+
+                starti = System.currentTimeMillis();
                 //System.out.println(studentNumberList.get(i)+"done with names");
                 rs = cs.executeQuery("select * from Courses where `Student_No.`='"+currStudentNumberList.get(i)+"' and `Calendar_Year`=2017");
                 //System.out.println("QUERY DONE");
@@ -257,8 +298,13 @@ class MysqlCon{
                     allCourses.add(newCourse);
                 }
                 //System.out.println(allCourses.size()+"course size");
+                 endi = System.currentTimeMillis();
+                 timei = endi -starti;
+                System.out.println(timei + "per student(loop) get courses and make course objects");
+
 
                 //System.out.println("NO ERROR IN FIRST QUERY");
+                starti = System.currentTimeMillis();
                 List<StudentHistory> allStudentHistory = new ArrayList<>();
                 rs = cs.executeQuery("select * from History where `Student_No.`='"+currStudentNumberList.get(i)+"'");
                 while (rs.next()) {
@@ -275,9 +321,18 @@ class MysqlCon{
                     StudentHistory newHistory = new StudentHistory(year, yos, programCode,yearOutcome, outcomeDescription, averageMarks, enrolledCredits, achievedCredits);
                     allStudentHistory.add(newHistory);
                 }
+                endi = System.currentTimeMillis();
+                timei = endi -starti;
+                System.out.println(timei + "per student(loop) get history and make objects");
+
 
                 List<NoteInfo> allStudentNotes = new ArrayList<>();
+                starti = System.currentTimeMillis();
                 rs = cs.executeQuery("select * from Notes where `Student_No.`='"+currStudentNumberList.get(i)+"'");
+                endi = System.currentTimeMillis();
+                timei = endi -starti;
+                System.out.println(timei + "per student(loop) actual notes query");
+                starti = System.currentTimeMillis();
                 while (rs.next()){
                     String priNote = rs.getString(3);
                     String pubNote = rs.getString(4);
@@ -286,13 +341,22 @@ class MysqlCon{
                     NoteInfo ni = new NoteInfo(priNote, pubNote,userNote);
                     allStudentNotes.add(ni);
                 }
+                endi = System.currentTimeMillis();
+                timei = endi -starti;
+                System.out.println(timei + "per student(loop) while loop and making objects");
 
-
+                starti = System.currentTimeMillis();
                 students newStudent = new students(studentNum, surname, name, ProgramCode, allCourses, allStudentHistory,allStudentNotes);
+                endi = System.currentTimeMillis();
+                timei = endi -starti;
+                System.out.println(timei + "per student(loop) compiling student objects");
 
                 allStudents.add(newStudent);
 
             }
+            end = System.currentTimeMillis();
+            time1 = end - start;
+            System.out.println(time1 +" looping through list querying students info, courses, history notes and making objects");
 
             System.out.println("*********************student objeccts done");
             con.close();
@@ -308,8 +372,8 @@ class MysqlCon{
     public void updatePubDBNotes(String stNum, String userName, String notePublic){
 
         try {
-            //con = DriverManager.getConnection(dbUrl, "username", "password");
-            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            con = DriverManager.getConnection(dbUrl, "username", "password");
+            //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
             cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             rs = cs.executeQuery("select 1 from Notes where `Student_No.` = '"+stNum+"' AND `User` = '" +userName+"'");
 
@@ -335,7 +399,8 @@ class MysqlCon{
     public void updatePrivDBNotes(String stNum,  String userName, String notePrivate){
 
         try {
-                con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            con = DriverManager.getConnection(dbUrl, "username", "password");
+            //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
                 cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
                 rs = cs.executeQuery("select 1 from Notes where `Student_No.` = '"+stNum+"' AND `User` = '" +userName+"'");
 
@@ -367,7 +432,8 @@ class MysqlCon{
 
         try {
 
-            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            con = DriverManager.getConnection(dbUrl, "username", "password");
+            //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
             cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             rs = cs.executeQuery("select * from Notes where `Student_No.` = '"+stNum+"' AND `User` = '"+userName+"'");
 
@@ -397,8 +463,9 @@ class MysqlCon{
         Connection con = null;
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            //Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection(dbUrl, "username", "password");
+            //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
 
             Statement cs;
             ResultSet rs;

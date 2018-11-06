@@ -17,9 +17,8 @@ public class Users {
     String Password;
     String Discipline;
     String Gender;
-
-    //String dbUrl = "jdbc:mysql://sdp.ms.wits.ac.za:3306/developmentDB?useSSL=false";
-    String dbUrl = "jdbc:mysql://docselectrical.co.za:3306/DevelopmentDB";
+    String dbUrl = "jdbc:mysql://sdp.ms.wits.ac.za:3306/developmentDB?useSSL=false";
+    //String dbUrl = "jdbc:mysql://docselectrical.co.za:3306/DevelopmentDB";
 
 
 
@@ -117,7 +116,8 @@ public class Users {
 
         Class.forName("com.mysql.jdbc.Driver");
         //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
-        con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+        con = DriverManager.getConnection(dbUrl, "username", "password");
+        //con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
 
         Statement cs;
         ResultSet rs;

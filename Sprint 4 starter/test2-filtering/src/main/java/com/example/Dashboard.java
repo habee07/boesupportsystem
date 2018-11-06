@@ -705,11 +705,23 @@ public class Dashboard extends VerticalLayout implements View {
 
         //DB CONNECTION TEST:
         MysqlCon conn = new MysqlCon();
+
+        long start = System.currentTimeMillis();
         conn.getStudentNumbers();
+        long end = System.currentTimeMillis();
+        long time1 = end - start;
+        System.out.println(time1 +" dashboard conn.get student numbers");
+
         numberOfPages = conn.numberOfPages;
         System.out.println(numberOfPages + " no of pages");
         //allStudents = conn.getStudentObjects();
+
+        start = System.currentTimeMillis();
         List<students> studentList1 = conn.getStudentObjects(1);
+         end = System.currentTimeMillis();
+         time1 = end - start;
+        System.out.println(time1 +" dashboard conn.get student objects for page 1");
+
         ListofStudentLists = new ArrayList<>();
         ListofStudentLists.add(studentList1);
         // Pages:
@@ -741,7 +753,11 @@ public class Dashboard extends VerticalLayout implements View {
         List<CGridLayout> tempLayoutlist = new ArrayList<>();
         for(int i=0; i<ListofStudentLists.get(0).size();i++){
             HardList.add(1);
+            start = System.currentTimeMillis();
             CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(0).get(i), FilterList, FilterType);
+            end = System.currentTimeMillis();
+            time1 = end - start;
+            System.out.println(time1 +" dashboard making cgridlayout each time per student");
 
             tempLayoutlist.add(studentGrid);
             contentLayout1.addComponent(studentGrid);
@@ -771,7 +787,11 @@ public class Dashboard extends VerticalLayout implements View {
 
                         for (int i = 0; i < ListofStudentLists.get(j).size(); i++) {
                             HardList.add(1);
+                            long startt = System.currentTimeMillis();
                             CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(j).get(i), FilterList, FilterType);
+                            long endt = System.currentTimeMillis();
+                            long time = endt - startt;
+                            System.out.println(time +" dashboard making cgridlayout for page 2");
                             tempLayout.add(studentGrid);
                             if(j == currPage-1){
                                 contentLayout1.addComponent(studentGrid);
