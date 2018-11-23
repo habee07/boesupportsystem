@@ -6,12 +6,14 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.ValoTheme;
 
 import java.awt.*;
 import java.sql.SQLException;
@@ -24,15 +26,32 @@ import java.util.List;
 @Push
 public class Dashboard extends VerticalLayout implements View, Broadcaster.BroadcastListener {
 
-    VerticalLayout messages = new VerticalLayout();
+    //VerticalLayout messages = new VerticalLayout();
     HorizontalLayout upperSection = new HorizontalLayout();
     HorizontalLayout innerUpperSection = new HorizontalLayout();
     HorizontalSplitPanel lowerSection = new HorizontalSplitPanel();
     VerticalLayout menuLayout = new VerticalLayout();
     HorizontalLayout menuTitle = new HorizontalLayout();
     VerticalLayout contentLayout1 = new VerticalLayout();
-
     VerticalLayout profileLayout = new VerticalLayout();
+
+    VerticalLayout absLayout = new VerticalLayout();
+
+
+    HorizontalLayout liveSessionInfo = new HorizontalLayout();
+    Button nextStudent;
+    Button prevStudent;
+    Label sessionInfo;
+    Label studentInfo = new Label();
+    Button update;
+    //Button joinSession;
+    Button startSession;
+    String currStudent = "-1";
+    int currIndexstudent = -1;
+    int currLivePage = -1;
+    Boolean liveOrNot = false;
+    //List<String> joinedUsers = new ArrayList<>();
+    Boolean joinOrNot = false;
 
 
     Label lblHeader;
@@ -171,6 +190,9 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
 
     public Dashboard(){
         //setSizeUndefined();
+
+        //absLayout.setSizeFull();
+
         lblHeader = new Label("");
         lblHeader.addStyleName("colored");
         lblHeader.addStyleName("h2");
@@ -211,9 +233,28 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
         btnLogout.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+
+                System.out.println(user.currUser.Role);
+                if(user.currUser.Role.equals("special user")){
+                    if(liveOrNot == true){
+                        liveOrNot = false;
+
+                        Broadcaster.broadcast("offsession");
+
+                    }
+                }
+
+                unregister();
                 user.logOut();
                 Notification.show("Sign out Successful!").setDelayMsec(2000);
-
+                /**
+                else{
+                    if(joinedUsers.contains(user.CurrensatUser.Name)){
+                        joinedUsers.remove(user.CurrsaentUser.Name);
+                        joinOrNot = false;
+                    }
+                }
+                 **/
                 getUI().getNavigator().navigateTo("login");
             }
         });
@@ -249,8 +290,8 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
         upperSection.addStyleName("borderBottom");
         //upperSection.setHeight(4, UNITS_EM);
 
-        addComponent(upperSection);
-        contentLayout1.setSizeUndefined();
+        //absLayout.addComponent(upperSection);
+        contentLayout1.setSizeFull();
 
         profileLayout.setSizeUndefined();
         //addWelcomeText();
@@ -258,17 +299,45 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
         contentLayout1.setWidth("100%");
 
         //contentLayout.setSizeFull();
-        addComponent(profileLayout);
+        //absLayout.addComponent( upperSection , profileLayout);
 
         pageButtons = new HorizontalLayout();
         //pageButtons.setSizeFull();
 
 
         AllFilterStuff = new VerticalLayout();
-        addComponent(pageButtons);
-        addComponent(AllFilterStuff);
-        addComponent(messages);
+        absLayout.setSizeFull();
+        absLayout.addComponents(upperSection , profileLayout, pageButtons, liveSessionInfo, AllFilterStuff);
+
+        /** semi working split panel
+
+
+        VerticalSplitPanel sample = new VerticalSplitPanel();
+        sample.setSizeFull();
+        sample.setSplitPosition(500, Unit.PIXELS);
+        sample.setFirstComponent(absLayout);
+        sample.setSecondComponent(contentLayout1);
+        //addComponent(sample);
+         **/
+        //absLayout.addComponent(AllFilterStuff);
+        //absLayout.addComponent(messages);
+
+        addComponent(absLayout);
         addComponent(contentLayout1);
+
+
+
+        /**
+        Panel menuPanel = new Panel();
+        menuPanel.setContent(absLayout);
+        menuPanel.setStyleName(ValoTheme.PANEL_WELL);
+        menuPanel.setSizeFull();
+        setExpandRatio(menuPanel, 1);
+        addComponent(menuPanel);
+        **/
+
+
+
        // addComponent(AllFilterStuff);
 
 
@@ -279,8 +348,8 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
 
         final TextField input = new TextField();
         Button send = new Button("Send");
-        messages.addComponent(input);
-        messages.addComponent(send);
+        //messages.addComponent(input);
+        //messages.addComponent(send);
         send.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -310,9 +379,89 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
          setExpandRatio(lowerSection,1);
          **/
         //addComponent(new Label("WELCOME TO BOARD OF EXAMINATIONS SYSTEM DASHBOARD ! "));
+
+        liveSessionInfo.setSizeFull();
+        nextStudent = new Button("Next Student");
+        prevStudent = new Button("Previous Student");
+        sessionInfo = new Label("No Current Live Session");
+        update = new Button("Sync with Session");
+        startSession = new Button("Start Live Session");
+
+
+        liveSessionInfo.addComponents(sessionInfo, studentInfo, update, startSession, nextStudent, prevStudent);
+
+        nextStudent.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(liveOrNot == true){
+                    if( currIndexstudent < ListofStudentLists.get(currPage - 1).size()-1 ){
+                        currStudent = ListofStudentLists.get(currPage - 1).get(currIndexstudent +1).getStudentNumber();
+                        currIndexstudent = currIndexstudent +1;
+                        studentInfo.setValue("Current Student: " + currStudent + "   Current Page: " + currLivePage);
+                        Broadcaster.broadcast("!cs "+ currStudent + " !cp "+ currLivePage + " !ci " + currIndexstudent);
+                    }
+                }
+            }
+        });
+
+        prevStudent.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(liveOrNot == true){
+                    if(currIndexstudent > 0 ){
+                        currStudent = ListofStudentLists.get(currPage - 1).get(currIndexstudent-1).getStudentNumber();
+                        currIndexstudent = currIndexstudent -1;
+                        studentInfo.setValue("Current Student: " + currStudent + "   Current Page: " + currLivePage);
+                        Broadcaster.broadcast("!cs "+ currStudent + " !cp "+ currLivePage + " !ci " + currIndexstudent);
+                    }
+                }
+            }
+        });
+
+        update.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if(liveOrNot == true){
+                    if(currPage == currLivePage ){
+                        scrollToResult(CGridLayoutList.get(currIndexstudent));
+                    }
+                    else{
+                        Notification.show("Go to Page "+ currLivePage).setDelayMsec(2000);
+                    }
+                }
+            }
+        });
+
+
+        startSession.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if (liveOrNot == false) {
+                    liveOrNot = true;
+                    joinOrNot = true;
+                    Broadcaster.broadcast("livesession");
+                    //joinedUsers.add(user.CurrentasUser.Name);
+                    currLivePage = currPage;
+                    currStudent = ListofStudentLists.get(currPage - 1).get(0).getStudentNumber();
+                    currIndexstudent = 0;
+                    studentInfo.setValue("Current Student: " + currStudent + "   Current Page: " + currLivePage);
+                    Broadcaster.broadcast("!cs "+ currStudent + " !cp "+ currLivePage + " !ci " + currIndexstudent);
+
+                    //addLiveUserList();
+                }
+                else{
+                    Notification.show("A Session is Already Live!").setDelayMsec(2000);
+
+                }
+            }
+        });
+
     }
 
 
+    public void scrollToResult(VerticalLayout layout) {
+        UI.getCurrent().scrollIntoView(layout);
+    }
 
     @Override
     public void detach() {
@@ -320,6 +469,9 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
         super.detach();
     }
 
+    public void unregister(){
+        Broadcaster.unregister(this);
+    }
     @Override
     public void receiveBroadcast(final String message) {
         // Must lock the session to execute logic safely
@@ -327,16 +479,54 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
             @Override
             public void run() {
                 // Show it somehow
-                    if(message.equals("student")){
+
+                if(message.contains("!")){
+                    System.out.println(message);
+                    String[] msg = message.split(" ");
+                    String update = "";
+                    if(msg[0].equals("!cs")){
+                        update  = update + "Current Student: " + msg[1];
+                    }
+                    if(msg[2].equals("!cp")){
+                        update = update + "   Current Page: " + msg[3];
+                        currLivePage = Integer.parseInt(msg[3]);
+                    }
+                    if(msg[4].equals("!ci")){
+                        currIndexstudent = Integer.parseInt(msg[5]);
+                    }
+                    studentInfo.setValue(update);
+
+
+                }
+                if(message.equals("offsession")){
+                    sessionInfo.setValue("No Current Live Session");
+                    studentInfo.setValue("");
+                    liveOrNot = false;
+                }
+                if(message.equals("student")){
                         CGridLayoutList.get(0).getStudentDetails().markAsDirty();
                        ListofStudentLists.get(0).get(0).setStudentName("blah blah");
 
                     }
-                    else {
+                    if(message.equals("livesession")){
+                        System.out.println(message);
+                        liveOrNot =true;
+                        sessionInfo.setValue("Session is now LIVE");
+
+
+                    }
+                    if(message.equals("jump")){
+                        System.out.println(message);
+                        scrollToResult(CGridLayoutList.get(3));
+
+
+                    }
+                    /**else {
                         messages.addComponent(new Label(message));
 
                         System.out.println(message);
                     }
+                     **/
 
 
             }
@@ -345,6 +535,25 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
         System.out.println("out");
     }
 
+
+    public void addLiveSessionInfo(){
+        /**String currStudent = "-1";
+         int currLivePage = -1;
+         Boolean liveOrNot = false;
+**/
+
+
+
+
+    }
+
+    public void addLiveUserList(){
+        // info = new Label("Current Users in Session");
+        //messages.addComponent(info);
+       // Label username = new Label(user.currUser.Name);
+        //messages.addComponent(username);
+
+    }
     /**public void setMenuTitle(){
      menuTitle.addComponent(lblMenu);
      menuLayout.addComponent(menuTitle);
@@ -354,12 +563,12 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
 
      public void addWelcomeText(){
      VerticalLayout data = new VerticalLayout();
-     if( user.CurrentUser != null) {
-     Label lblTitle = new Label("WELCOME " + user.CurrentUser.Name + " TO THE WITS BOARD OF EXAMINATIONS SYSTEM DASHBOARD !!");
+     if( user.CurrentsaUser != null) {
+     Label lblTitle = new Label("WELCOME " + user.CurrenastUser.Name + " TO THE WITS BOARD OF EXAMINATIONS SYSTEM DASHBOARD !!");
      lblTitle.addStyleName("h1");
      lblTitle.addStyleName("colored");
 
-     lblHeader.setValue("" + user.CurrentUser.Name);
+     lblHeader.setValue("" + user.CurreasntUser.Name);
 
      data.addComponentsAndExpand(lblTitle);
      }
@@ -408,46 +617,46 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
 
         tfID = new TextField("Username:");
         System.out.println(user.Discipline);
-        tfID.setValue(user.CurrentUser.UserName);
+        tfID.setValue(user.currUser.UserName);
         tfID.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfID);
 
         tfEmail = new TextField("Email Address:");
-        tfEmail.setValue(user.CurrentUser.Email);
+        tfEmail.setValue(user.currUser.Email);
         tfEmail.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfEmail);
 
         tfName = new TextField("Full Name:");
-        tfName.setValue(user.CurrentUser.Name);
+        tfName.setValue(user.currUser.Name);
         tfName.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfName);
 
         tfPassword = new PasswordField("Password:");
-        tfPassword.setValue(user.CurrentUser.Password);
+        tfPassword.setValue(user.currUser.Password);
         tfPassword.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfPassword);
 
         tfDiscipline = new TextField("Discipline:");
-        tfDiscipline.setValue(user.CurrentUser.Discipline);
+        tfDiscipline.setValue(user.currUser.Discipline);
         tfDiscipline.setRequiredIndicatorVisible(true);
         formLayout.addComponent(tfDiscipline);
 
 
         taBio = new TextArea("Bio:");
-        taBio.setValue(user.CurrentUser.Bio);
+        taBio.setValue(user.currUser.Bio);
         formLayout.addComponent(taBio);
 
         opGender = new RadioButtonGroup("Gender");
         opGender.setItems("Male", "Female", "Other");
-        if(user.CurrentUser.Gender.equals("Male")){
+        if(user.currUser.Gender.equals("Male")){
          opGender.setSelectedItem("Male");
 
          }
-         if(user.CurrentUser.Gender.equals("Female")){
+         if(user.currUser.Gender.equals("Female")){
          opGender.setSelectedItem("Female");
 
          }
-         if(user.CurrentUser.Gender.equals("Other")){
+         if(user.currUser.Gender.equals("Other")){
          opGender.setSelectedItem("Other");
 
          }
@@ -489,18 +698,18 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
 
                 }
 
-                boolean Auth = user.updateUser(user.CurrentUser.UserName, tfID.getValue(), opGender.getValue().toString(), tfDiscipline.getValue(), tfPassword.getValue(), Bio, tfEmail.getValue(), tfName.getValue());
+                boolean Auth = user.updateUser(user.currUser.UserName, tfID.getValue(), opGender.getValue().toString(), tfDiscipline.getValue(), tfPassword.getValue(), Bio, tfEmail.getValue(), tfName.getValue());
 
 
 
                 if (Auth){
-                    user.CurrentUser.UserName = tfID.getValue();
-                    user.CurrentUser.Gender = opGender.getValue().toString();
-                    user.CurrentUser.Discipline = tfDiscipline.getValue();
-                    user.CurrentUser.Password = tfPassword.getValue();
-                    user.CurrentUser.Bio = Bio;
-                    user.CurrentUser.Email = tfEmail.getValue();
-                    user.CurrentUser.Name =tfName.getValue();
+                    user.currUser.UserName = tfID.getValue();
+                    user.currUser.Gender = opGender.getValue().toString();
+                    user.currUser.Discipline = tfDiscipline.getValue();
+                    user.currUser.Password = tfPassword.getValue();
+                    user.currUser.Bio = Bio;
+                    user.currUser.Email = tfEmail.getValue();
+                    user.currUser.Name =tfName.getValue();
 
                     Notification.show("You profile has been updated successfully!").setDelayMsec(2000);
 
@@ -530,16 +739,37 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
     public void addDataView(){
 
 
-        if (user.CurrentUser.Discipline.toUpperCase().equals("ADMIN")){
+        if (user.currUser.Role.equals("special user")){
             btnUpload.setVisible(true);
+        }
+        else{
+            btnUpload.setVisible(false);
         }
 
 
-        Label lblTitle = new Label("WELCOME " + user.CurrentUser.Name + " TO THE WITS BOARD OF EXAMINATIONS SYSTEM DASHBOARD !!");
+        if(user.currUser.Role.equals("special user")){
+            update.setVisible(false);
+
+            nextStudent.setVisible(true);
+            prevStudent.setVisible(true);
+            startSession.setVisible(true);
+
+
+        }
+        else{
+            update.setVisible(true);
+
+            nextStudent.setVisible(false);
+            prevStudent.setVisible(false);
+            startSession.setVisible(false);
+
+        }
+
+        Label lblTitle = new Label("WELCOME " + user.currUser.Name + " TO THE WITS BOARD OF EXAMINATIONS SYSTEM DASHBOARD !!");
         lblTitle.addStyleName("h1");
         lblTitle.addStyleName("colored");
 
-        lblHeader.setValue("" + user.CurrentUser.Name);
+        lblHeader.setValue("" + user.currUser.Name);
 
         AllFilterStuff.addComponent(lblTitle);
 
@@ -848,7 +1078,7 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
         tempLayoutlist = new ArrayList<>();
         for(int i=0; i<ListofStudentLists.get(0).size();i++){
             HardList.add(1);
-            CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(0).get(i), FilterList, FilterType);
+            CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(0).get(i), user.currUser, FilterList, FilterType);
 
             tempLayoutlist.add(studentGrid);
             contentLayout1.addComponent(studentGrid);
@@ -911,7 +1141,7 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
                         for (int i = 0; i < ListofStudentLists.get(j).size(); i++) {
 
                             HardList.add(1);
-                            CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(j).get(i), FilterList, FilterType);
+                            CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(j).get(i), user.currUser, FilterList, FilterType);
                             tempLayout.add(studentGrid);
                             if(j == currPage-1){
                                 contentLayout1.addComponent(studentGrid);
@@ -931,7 +1161,14 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
 
                 //making cgridlayoutlist = cgridlayoutlist1
                 CGridLayoutList = listOfLayoutList.get(currPage-1);
+            if(user.currUser.Role.equals("special user")) {
+                currIndexstudent = 0;
 
+                currStudent = ListofStudentLists.get(currPage - 1).get(currIndexstudent).getStudentNumber();
+                currLivePage = currPage;
+                studentInfo.setValue("Current Student: " + currStudent + "   Current Page: " + currLivePage);
+                Broadcaster.broadcast("!cs " + currStudent + " !cp " + currLivePage + " !ci " + currIndexstudent);
+            }
 
 
 
@@ -983,7 +1220,7 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
                     List<CGridLayout> tempLayout = new ArrayList<>();
                     for (int i = 0; i < ListofStudentLists.get(currPage-1).size(); i++) {
                         HardList.add(1);
-                        CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(currPage-1).get(i), FilterList, FilterType);
+                        CGridLayout studentGrid = new CGridLayout(ListofStudentLists.get(currPage-1).get(i), user.currUser, FilterList, FilterType);
                         tempLayout.add(studentGrid);
                         contentLayout1.addComponent(studentGrid);
 
@@ -1001,7 +1238,14 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
                 //making cgridlayoutlist = cgridlayoutlist1
                 CGridLayoutList = listOfLayoutList.get(currPage-1);
 
+                if(user.currUser.Role.equals("special user")) {
+                    currIndexstudent = 0;
 
+                    currStudent = ListofStudentLists.get(currPage - 1).get(currIndexstudent).getStudentNumber();
+                    currLivePage = currPage;
+                    studentInfo.setValue("Current Student: " + currStudent + "   Current Page: " + currLivePage);
+                    Broadcaster.broadcast("!cs " + currStudent + " !cp " + currLivePage + " !ci " + currIndexstudent);
+                }
             }
         });
         prevPage.addClickListener(e->{
@@ -1049,7 +1293,14 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
                 }
                 //making cgridlayoutlist = cgridlayoutlist1
                 CGridLayoutList = listOfLayoutList.get(currPage-1);
+                if(user.currUser.Role.equals("special user")) {
+                    currIndexstudent = 0;
 
+                    currStudent = ListofStudentLists.get(currPage - 1).get(currIndexstudent).getStudentNumber();
+                    currLivePage = currPage;
+                    studentInfo.setValue("Current Student: " + currStudent + "   Current Page: " + currLivePage);
+                    Broadcaster.broadcast("!cs " + currStudent + " !cp " + currLivePage + " !ci " + currIndexstudent);
+                }
 
             }
         });
@@ -3251,14 +3502,23 @@ public class Dashboard extends VerticalLayout implements View, Broadcaster.Broad
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event){
+
+        String username = event.getParameters();
+        System.out.println(username);
+        user.getUserInfo(username);
+        System.out.println("Made user: " + user.currUser.Name +" "+user.currUser.Discipline + " " +user.currUser.UserName);
+        //user.currUser = new Users()
         menuLayout.removeAllComponents();
         contentLayout1.removeAllComponents();
         profileLayout.removeAllComponents();
         pageButtons.removeAllComponents();
         AllFilterStuff.removeAllComponents();
+        System.out.println(user.currUser.Role);
+        Broadcaster.register(this);
 
         addDataView();
         addProfilePage();
+        addLiveSessionInfo();
         getUI().setPollInterval(1000);
 
     }

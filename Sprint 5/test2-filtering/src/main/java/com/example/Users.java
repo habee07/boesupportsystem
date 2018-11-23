@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Users {
 
     public static Users CurrentUser;
+    public Users currUser;
 
 
     String UserName;
@@ -17,13 +18,14 @@ public class Users {
     String Password;
     String Discipline;
     String Gender;
+    String Role;
 
     //String dbUrl = "jdbc:mysql://sdp.ms.wits.ac.za:3306/developmentDB?useSSL=false";
     String dbUrl = "jdbc:mysql://docselectrical.co.za:3306/DevelopmentDB";
 
 
 
-    public Users(String userName, String gender, String discipline, String password, String bio, String email, String name ) {
+    public Users(String userName, String gender, String discipline, String password, String bio, String email, String name, String role ) {
         UserName = userName;
         Gender = gender;
         Discipline = discipline;
@@ -31,6 +33,7 @@ public class Users {
         Bio = bio;
         Email = email;
         Name = name;
+        Role = role;
 
     }
 
@@ -110,6 +113,52 @@ public class Users {
         }
     }
 
+
+
+    public void getUserInfo(String username){
+
+
+        try {
+            String name = "";
+            String email ="";
+            String bio = "";
+            String discipline = "";
+            String gender = "";
+            String role = "";
+            String password = "";
+            //Class.forName("com.mysql.jdbc.Driver");
+
+            //Connection con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            Connection con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+
+            Statement cs;
+            ResultSet rs;
+
+            cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            rs = cs.executeQuery("select * from Users where `Username`='" + username + "'");
+            if(rs.next()){
+                System.out.println("query name" + rs.getString(3));
+                 name = rs.getString(3);
+                 email = rs.getString(4);
+                 bio = rs.getString(5);
+                 discipline = rs.getString(7);
+                 gender = rs.getString(8);
+                 role = rs.getString(9);
+                 password = rs.getString(6);
+
+            }
+
+            con.close();
+            currUser = new Users(username, gender, discipline, password, bio, email, name, role);
+        }
+        catch (Exception e) {
+
+            String result = e.toString();
+            System.out.println(result);    // getWindow(null).showNotification("Error");
+        }
+
+
+    }
     public Boolean Login() throws ClassNotFoundException, SQLException {
 
 
@@ -138,9 +187,10 @@ public class Users {
             Bio = rs.getString(5);
             Discipline = rs.getString(7);
             Gender = rs.getString(8);
+            Role = rs.getString(9);
 
 
-            CurrentUser = new Users(UserName,Gender,Discipline,Password,Bio,Email,Name);
+            CurrentUser = new Users(UserName,Gender,Discipline,Password,Bio,Email,Name, Role);
 
             return true;
 
@@ -184,7 +234,7 @@ public class Users {
     }
     public void logOut() {
 
-        CurrentUser = null;
+        currUser = null;
 
     }
 

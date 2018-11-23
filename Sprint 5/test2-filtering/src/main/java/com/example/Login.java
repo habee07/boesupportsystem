@@ -51,8 +51,9 @@ public class Login extends VerticalLayout implements View {
                     SignIn = new Users(tfPassword.getValue(), tfID.getValue());
 
                     if(SignIn.Login()){
+                        //getUI().getSession().get
 
-                        getUI().getNavigator().navigateTo("dashboard");
+                        getUI().getNavigator().navigateTo("dashboard/"+tfID.getValue());
 
                         tfPassword.setValue("");
                         tfID.setValue("");

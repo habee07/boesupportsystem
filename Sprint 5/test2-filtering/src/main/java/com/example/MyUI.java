@@ -22,7 +22,7 @@ public class MyUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-
+        //Users currentUser = getUI().getSession().setAttribute("currentUser",currentUser);
         Navigator nav = new Navigator(this,this);
 
         //login

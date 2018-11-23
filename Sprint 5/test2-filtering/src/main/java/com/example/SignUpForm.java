@@ -93,7 +93,7 @@ public class SignUpForm extends VerticalLayout implements View {
 
                 }
 
-                User = new Users(tfID.getValue(), opGender.getValue().toString(), tfDiscipline.getValue(), tfPassword.getValue(), Bio, tfEmail.getValue(), tfName.getValue());
+                User = new Users(tfID.getValue(), opGender.getValue().toString(), tfDiscipline.getValue(), tfPassword.getValue(), Bio, tfEmail.getValue(), tfName.getValue(), "general user");
 
                 Boolean Auth = false;
                 try {

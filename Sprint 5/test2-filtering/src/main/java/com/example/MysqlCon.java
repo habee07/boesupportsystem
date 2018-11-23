@@ -168,7 +168,7 @@ class MysqlCon{
                     allStudentHistory.add(newHistory);
                 }
 
-                List<NoteInfo> allStudentNotes = new ArrayList<>();
+                /**List<NoteInfo> allStudentNotes = new ArrayList<>();
                 rs = cs.executeQuery("select * from Notes where `Student_No.`='"+studentNumberList.get(i)+"'");
                 while (rs.next()){
                     String priNote = rs.getString(3);
@@ -179,8 +179,8 @@ class MysqlCon{
                     allStudentNotes.add(ni);
                 }
 
-
-                students newStudent = new students(studentNum, surname, name, ProgramCode, allCourses, allStudentHistory,allStudentNotes);
+            **/
+                students newStudent = new students(studentNum, surname, name, ProgramCode, allCourses, allStudentHistory);
 
                 allStudents.add(newStudent);
 
@@ -276,7 +276,7 @@ class MysqlCon{
                     allStudentHistory.add(newHistory);
                 }
 
-                List<NoteInfo> allStudentNotes = new ArrayList<>();
+                /**List<NoteInfo> allStudentNotes = new ArrayList<>();
                 rs = cs.executeQuery("select * from Notes where `Student_No.`='"+currStudentNumberList.get(i)+"'");
                 while (rs.next()){
                     String priNote = rs.getString(3);
@@ -286,9 +286,9 @@ class MysqlCon{
                     NoteInfo ni = new NoteInfo(priNote, pubNote,userNote);
                     allStudentNotes.add(ni);
                 }
+                **/
 
-
-                students newStudent = new students(studentNum, surname, name, ProgramCode, allCourses, allStudentHistory,allStudentNotes);
+                students newStudent = new students(studentNum, surname, name, ProgramCode, allCourses, allStudentHistory);
 
                 allStudents.add(newStudent);
 
@@ -483,5 +483,28 @@ class MysqlCon{
     }
 
 
+    public List<NoteInfo> getStudentNotes(String studentNumber) {
+        List<NoteInfo> allStudentNotes = new ArrayList<>();
+        try {
 
+            con = DriverManager.getConnection(dbUrl, "DevelopmentDB", "Password");
+            cs = con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            rs = cs.executeQuery("select * from Notes where `Student_No.`='" +studentNumber+ "'");
+            while (rs.next()) {
+                System.out.println("note db: " +rs.getString(4));
+                String priNote = rs.getString(3);
+                String pubNote = rs.getString(4);
+                String userNote = rs.getString(5);
+
+                NoteInfo ni = new NoteInfo(priNote, pubNote, userNote);
+                allStudentNotes.add(ni);
+            }
+            con.close();
+        }
+        catch (Exception e) {
+            String result = e.toString();
+
+        }
+        return allStudentNotes;
+    }
 }

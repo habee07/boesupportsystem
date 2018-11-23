@@ -14,7 +14,8 @@ import java.util.List;
 final class CGridLayout extends VerticalLayout {
 
      List<CourseGrid> CGridList;
-     Users user = new Users();
+    List<NoteInfo> notesList;
+     //Users user = new Users();
     //private final CourseGrid CGrid2;
     private students Astudent;
     private List<String> FilterList;
@@ -27,10 +28,16 @@ final class CGridLayout extends VerticalLayout {
     HorizontalLayout notesDisplay;
     Button showNotes;
     int noteNum;
+    Users currentUser;
 
 
-    public CGridLayout(students aStudentsss, List<String> filterlist,String filtertype ) {
+    public CGridLayout(students aStudentsss, Users curruser, List<String> filterlist,String filtertype ) {
         Astudent = aStudentsss;
+        currentUser = curruser;
+        System.out.println("Cgrid user"+ curruser.UserName);
+        MysqlCon conn = new MysqlCon();
+        notesList = conn.getStudentNotes(Astudent.getStudentNumber());
+        System.out.println("notes size:" + notesList.size());
         changednotePriv = false;
         changednotePub = false;
         FilterList = filterlist;
@@ -63,10 +70,10 @@ final class CGridLayout extends VerticalLayout {
         String currNPriv = "";
         String currNPub = "";
         noteNum = -1;
-        for(int i=0; i< Astudent.getStNotes().size();i++){
-            if(user.CurrentUser.UserName.equals(Astudent.getStNotes().get(i).getUser())){
-                currNPriv = Astudent.getStNotes().get(i).getNotePriv();
-                currNPub = Astudent.getStNotes().get(i).getNotePub();
+        for(int i=0; i< notesList.size();i++){
+            if(currentUser.UserName.equals(notesList.get(i).getUser())){
+                currNPriv = notesList.get(i).getNotePriv();
+                currNPub = notesList.get(i).getNotePub();
                 noteNum = i;
 
             }
@@ -94,7 +101,7 @@ final class CGridLayout extends VerticalLayout {
             addComponents(studentDetails, studentYearInfo);
             CGrid = new CourseGrid(Astudent.getCourse());
 
-        NotesGrid NoteGrid = new NotesGrid(Astudent.getStNotes());
+        NotesGrid NoteGrid = new NotesGrid(notesList);
             notesDisplay.addComponent(NoteGrid);
             notesDisplay.setVisible(false);
 
@@ -103,6 +110,10 @@ final class CGridLayout extends VerticalLayout {
                 notesDisplay.setVisible(false);
             }
             else{
+                notesList = conn.getStudentNotes(Astudent.getStudentNumber());
+                NotesGrid updatedNoteGrid = new NotesGrid(notesList);
+                notesDisplay.removeAllComponents();
+                notesDisplay.addComponent(updatedNoteGrid);
                 notesDisplay.setVisible(true);
             }
 
@@ -216,10 +227,10 @@ final class CGridLayout extends VerticalLayout {
         addPrivNotes.addClickListener(e -> {
             addComponent(tAPriv);
 
-                List<String> notes = c.getDBNotes(Astudent.getStudentNumber(), user.CurrentUser.UserName);
+                List<String> notes = c.getDBNotes(Astudent.getStudentNumber(), currentUser.UserName);
                 tAPriv.setValue(notes.get(0));
             if(noteNum != -1 ) {
-                Astudent.getStNotes().get(noteNum).setNotePriv(notes.get(0));
+                notesList.get(noteNum).setNotePriv(notes.get(0));
             }
                 changednotePriv = false;
 
@@ -233,11 +244,11 @@ final class CGridLayout extends VerticalLayout {
         addPubNotes.addClickListener(e -> {
 
             addComponent(tAPub);
-            List<String> notes = c.getDBNotes(Astudent.getStudentNumber(), user.CurrentUser.UserName);
+            List<String> notes = c.getDBNotes(Astudent.getStudentNumber(), currentUser.UserName);
 
             tAPub.setValue(notes.get(1));
             if(noteNum != -1 ) {
-                Astudent.getStNotes().get(noteNum).setNotePub(notes.get(1));
+                notesList.get(noteNum).setNotePub(notes.get(1));
             }
             changednotePub = false;
 
@@ -269,15 +280,15 @@ final class CGridLayout extends VerticalLayout {
         saveNotesPriv.addClickListener(e -> {
             changednotePriv = true;
             if(noteNum != -1 ) {
-                Astudent.getStNotes().get(noteNum).setNotePriv(tAPriv.getValue());
+                notesList.get(noteNum).setNotePriv(tAPriv.getValue());
             }
             else{
-                NoteInfo newnote = new NoteInfo(tAPriv.getValue(),"",user.CurrentUser.UserName);
-                Astudent.getStNotes().add(newnote);
+                NoteInfo newnote = new NoteInfo(tAPriv.getValue(),"",currentUser.UserName);
+                notesList.add(newnote);
                 updateNoteNum();
             }
 
-            c.updatePrivDBNotes(Astudent.getStudentNumber(),user.CurrentUser.UserName,tAPriv.getValue());
+            c.updatePrivDBNotes(Astudent.getStudentNumber(),currentUser.UserName,tAPriv.getValue());
             removeComponent(tAPriv);
             removeComponent(hl1);
 
@@ -287,16 +298,16 @@ final class CGridLayout extends VerticalLayout {
         saveNotesPub.addClickListener(e -> {
             changednotePriv = true;
             if(noteNum != -1 ) {
-                Astudent.getStNotes().get(noteNum).setNotePub(tAPub.getValue());
+                notesList.get(noteNum).setNotePub(tAPub.getValue());
             }
             else{
-                NoteInfo newnote = new NoteInfo("",tAPub.getValue(),user.CurrentUser.UserName);
-                Astudent.getStNotes().add(newnote);
+                NoteInfo newnote = new NoteInfo("",tAPub.getValue(),currentUser.UserName);
+                notesList.add(newnote);
                 updateNoteNum();
             }
 
-            c.updatePubDBNotes(Astudent.getStudentNumber(),user.CurrentUser.UserName,tAPub.getValue());
-            NotesGrid newNoteGrid = new NotesGrid(Astudent.getStNotes());
+            c.updatePubDBNotes(Astudent.getStudentNumber(),currentUser.UserName,tAPub.getValue());
+            NotesGrid newNoteGrid = new NotesGrid(notesList);
             notesDisplay.removeAllComponents();
             notesDisplay.addComponent(newNoteGrid);
             removeComponent(tAPub);
@@ -355,8 +366,8 @@ final class CGridLayout extends VerticalLayout {
     }
 
     private void updateNoteNum() {
-        for(int i=0; i< Astudent.getStNotes().size();i++){
-            if(user.CurrentUser.UserName.equals(Astudent.getStNotes().get(i).getUser())){
+        for(int i=0; i< notesList.size();i++){
+            if(currentUser.UserName.equals(notesList.get(i).getUser())){
                 noteNum = i;
 
             }
