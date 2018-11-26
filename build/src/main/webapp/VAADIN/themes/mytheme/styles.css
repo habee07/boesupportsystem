@@ -15051,9 +15051,13 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mytheme .v-grid-row.filters > td {
-	background-color: #ffb3ba;
+	background-color: #fbc4b2;
 }
 
 .mytheme .v-grid-row.bluefilters > td {
-	background-color: #f0f8ff;
+	background-color: #dcbbf1;
+}
+
+.mytheme .v-grid-row.greenfilters > td {
+	background-color: #bff1bb;
 }

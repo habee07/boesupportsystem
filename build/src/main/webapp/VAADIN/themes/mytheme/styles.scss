@@ -9,10 +9,16 @@
   @include mytheme;
 
   .v-grid-row.filters > td {
-        background-color: rgb(255,179,186);
+        background-color: rgb(251,196,178);
     }
   .v-grid-row.bluefilters > td {
-      background-color: rgb(240,248,255);
+      background-color: rgb(220,187,241);
   }
+
+  .v-grid-row.greenfilters > td {
+          background-color: rgb(191,241,187);
+      }
+
+
 
   }

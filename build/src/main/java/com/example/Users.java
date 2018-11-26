@@ -17,13 +17,13 @@ public class Users {
     String Password;
     String Discipline;
     String Gender;
-    String UserID;
+
     //String dbUrl = "jdbc:mysql://sdp.ms.wits.ac.za:3306/developmentDB?useSSL=false";
     String dbUrl = "jdbc:mysql://docselectrical.co.za:3306/DevelopmentDB";
 
 
 
-    public Users(String userName, String gender, String discipline, String password, String bio, String email, String name, String userid) {
+    public Users(String userName, String gender, String discipline, String password, String bio, String email, String name ) {
         UserName = userName;
         Gender = gender;
         Discipline = discipline;
@@ -31,7 +31,7 @@ public class Users {
         Bio = bio;
         Email = email;
         Name = name;
-        UserID = userid;
+
     }
 
     public Users(String password, String userName) throws ClassNotFoundException, SQLException {
@@ -132,7 +132,7 @@ public class Users {
         }
 
         else if(rs.getString(6).equals(Password)){
-            UserID = rs.getString(1);
+
             Name = rs.getString(3);
             Email = rs.getString(4);
             Bio = rs.getString(5);
@@ -140,7 +140,7 @@ public class Users {
             Gender = rs.getString(8);
 
 
-            CurrentUser = new Users(UserName,Gender,Discipline,Password,Bio,Email,Name, UserID);
+            CurrentUser = new Users(UserName,Gender,Discipline,Password,Bio,Email,Name);
 
             return true;
 
