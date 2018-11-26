@@ -1,4 +1,14 @@
-before_install: cd build
 language: java
+
+jdk:
+  - oraclejdk8
+
 sudo: false
-script: mvn clean verify
+
+before_install: cd build
+
+script: mvn test
+
+after_success:
+  - mvn clean cobertura:cobertura coveralls:report
+
