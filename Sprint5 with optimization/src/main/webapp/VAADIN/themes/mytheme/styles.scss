@@ -1,0 +1,39 @@
+@import "mytheme.scss";
+@import "addons.scss";
+
+// This file prefixes all rules with the theme name to avoid causing conflicts with other themes.
+// The actual styles should be defined in mytheme.scss
+
+.mytheme {
+  @include addons;
+  @include mytheme;
+
+  .v-grid-row.filters > td {
+        background-color: rgb(251,196,178);
+    }
+  .v-grid-row.bluefilters > td {
+      background-color: rgb(220,187,241);
+  }
+
+  .v-grid-row.greenfilters > td {
+          background-color: rgb(191,241,187);
+      }
+
+  .v-grid-row.rf > td {
+   background-color: rgb(250,128,114);
+   }
+
+ .orange1{
+   background-color: rgb(251,196,178);
+   }
+
+   .purple1{
+   background-color: rgb(220,187,241);
+   }
+
+   .green1{
+   background-color: rgb(191,241,187);
+   }
+
+
+  }
